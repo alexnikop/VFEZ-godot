@@ -24,4 +24,8 @@ It is generally not recommended to change `vfez_template.gdshader` mindlessly as
 * Add more VFX examples
 * Add more VFEZ effects
 * Add more usage tutorials
+* Add VFEZMaterial2D
 * Cleanup `vfez_template.gdshader`
+
+## Godot 4.4
+I made small changes and the material should work fine in Godot 4.4. If you are using Godot 4.4 I suggest you create all VFX in that version, not in a previous one and then upgrade the project to Godot 4.4.
