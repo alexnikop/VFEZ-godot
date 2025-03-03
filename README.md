@@ -2,7 +2,7 @@
 
 ![screenshot](Images/effects_sample.png)
 
-VFEZ-godot includes a flexible godot material for easy VFX generation.
+VFEZ-godot includes a flexible godot material for easy VFX generation. VFEZ-godot was tested in Godot 4.3.
 
 To create a `VFEZ-material` simply clone the repository inside your project, then create a new material and select `New VFEZMaterial`.
 
