@@ -166,7 +166,6 @@ func _update_shader_code_definition(define_option: String, value_to_set: int):
 	if RecompileCodeSource == RecompileCodeSourceEnum.CurrentShader:
 		var updated_shader_code = _replace_define_option_in_shader_code(
 			shader.code, define_option, value_to_set)
-		shader = Shader.new()
 		shader.code = updated_shader_code
 	# if recompile source is template shader
 	elif RecompileCodeSource == RecompileCodeSourceEnum.OriginalTemplate:
@@ -253,9 +252,9 @@ func _update_shader_code_from_template_base():
 				potential_define_option,
 				value_to_set)
 				
-	shader = Shader.new()
 	shader.code = template_header + template_code
 
 func _init() -> void:	
 	if Engine.is_editor_hint():
+		shader = Shader.new()
 		_update_shader_code_from_template_base()
