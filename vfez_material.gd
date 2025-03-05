@@ -211,7 +211,7 @@ func _update_shader_code_from_template_base():
 // 
 """
 	var base_dir_name = get_script().get_path().get_base_dir()
-	var shader_template = load(base_dir_name + "/vfez_template.gdshader")
+	var shader_template = load(base_dir_name + "/Shaders/vfez_template.gdshader")
 	var template_code: String = shader_template.code
 	
 	# set all render options based on their current values
