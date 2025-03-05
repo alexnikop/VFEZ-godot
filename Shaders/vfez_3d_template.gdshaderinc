@@ -3,109 +3,63 @@
 // MANUAL CHANGES MIGHT CAUSE THE VFEZ MATERIAL TO WORK INCORRECTLY.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-shader_type spatial;
+// shader code starts here -----------------------------------------------
 
-// shader options. change flags to
-// include or exclude parts from compiled shader
-
-#define BLEND_MODE 0 // 0 Mix, 1 Add, 2 Subtract, 3 Multiply, 4 Premultiplied_Alpha
-#define DEPTH_DRAW_MODE 0 // 0 Opaque, 1 Always, 2 Never
-#define CULL_MODE 0 // 0 Back, 1 Front, 2 Disabled
-#define DIFFUSE_MODE 0 // 0 Lambert, 1 Lambert_Wrap, 2 Burley, 3 Toon
-#define SPECULAR_MODE 0 // 0 Schlick_Ggx, 1 Toon, 2 Disabled
-#define SHADING_MODE 0 // 0 Unshaded, 1 Shaded
-#define BILLBOARD 0 // 0 Disabled, 1 Enabled, 2 Y, 3 Particle
-#define BILLBOARD_KEEP_SCALE 0 // 0 Disabled, 1 Enabled
-#define NO_DEPTH_TEST 0 // 0 Disabled, 1 Enabled
-#define PARTICLE_OPTIONS 1 // 0 Disabled, 1 Enabled
-#define PARTICLE_TRAILS 0 // 0 Disabled, 1 Enabled
-#define PARTICLE_ANIM 0 // 0 Disabled, 1 Enabled
-
-// enable more shapes to blend more textures
-#define SHAPE2 1 // 0 Disabled, 1 Enabled
-#define SHAPE3 1 // 0 Disabled, 1 Enabled
-
-#define COLOR_FACE_TINT 1 // 0 Disabled, 1 Enabled
-#define COLOR_GRADING 1 // 0 Disabled, 1 Enabled
-#define COLOR_RAMP 1 // 0 Disabled, 1 Enabled
-#define COLOR_POSTERIZE 1 // 0 Disabled, 1 Enabled
-#define COLOR_RIM 1 // 0 Disabled, 1 Enabled
-#define COLOR_GLOW 1 // 0 Disabled, 1 Enabled
-#define COLOR_HSV_SHIFT 1 // 0 Disabled, 1 Enabled
-
-#define ALPHA_DISOLVE 1 // 0 Disabled, 1 Enabled
-#define ALPHA_MASK 1 // 0 Disabled, 1 Enabled
-#define ALPHA_REMAP 1 // 0 Disabled, 1 Enabled
-#define ALPHA_CUTOFF 1 // 0 Disabled, 1 Enabled
-
-#define UV_PIXELATE 1 // 0 Disabled, 1 Enabled
-#define UV_TWIST 1 // 0 Disabled, 1 Enabled
-#define UV_HANDRAWN 1 // 0 Disabled, 1 Enabled
-#define UV_SHAKE 1 // 0 Disabled, 1 Enabled
-#define UV_WAVE 1 // 0 Disabled, 1 Enabled
-#define UV_ROUND_WAVE 1 // 0 Disabled, 1 Enabled
-#define UV_GLOBAL_DISTORTION 1 // 0 Disabled, 1 Enabled
-
-#define VERTEX_OFFSET 1 // 0 Disabled, 1 Enabled
-#define VERTEX_EXPAND 1 // 0 Disabled, 1 Enabled
-
-// shader starts here -----------------------------------------------
-
-#if SHADING_MODE == 0
+#if defined(UNSHADED)
 	render_mode unshaded;
 #endif
 
-#if BLEND_MODE == 0
+#if defined(BLEND_MIX)
 	render_mode blend_mix;
-#elif BLEND_MODE == 1
+#elif defined(BLEND_ADD)
 	render_mode blend_add;
-#elif BLEND_MODE == 2
+#elif defined(BLEND_SUB)
 	render_mode blend_sub;
-#elif BLEND_MODE == 3
+#elif defined(BLEND_MUL)
 	render_mode blend_mul;
-#else
+#elif defined(BLEND_PREMUL_ALPHA)
 	render_mode blend_premul_alpha;
 #endif
 
-#if DEPTH_DRAW_MODE == 0
+#if defined(DEPTH_DRAW_OPAQUE)
 	render_mode depth_draw_opaque;
-#elif DEPTH_DRAW_MODE == 1
+#elif defined(DEPTH_DRAW_ALWAYS)
 	render_mode depth_draw_always;
-#else
+#elif defined(DEPTH_DRAW_NEVER)
 	render_mode depth_draw_never;
 #endif
 
-#if CULL_MODE == 0
+#if defined(CULL_BACK)
 	render_mode cull_back;
-#elif CULL_MODE == 1
+#elif defined(CULL_FRONT)
 	render_mode cull_front;
-#else
+#elif defined (CULL_DISABLED)
 	render_mode cull_disabled;
 #endif
 
-#if DIFFUSE_MODE == 0
+#if defined(DIFFUSE_LAMBERT)
 	render_mode diffuse_lambert;
-#elif DIFFUSE_MODE == 1
+#elif defined(DIFFUSE_LAMBERT_WRAP)
 	render_mode diffuse_lambert_wrap;
-#elif DIFFUSE_MODE == 2
+#elif defined(DIFFUSE_BURLEY)
 	render_mode diffuse_burley;
-#else
+#elif defined(DIFFUSE_TOON)
 	render_mode diffuse_toon;
 #endif
 
-#if SPECULAR_MODE == 0
+#if defined(SPECULAR_SCHLICK_GGX)
 	render_mode specular_schlick_ggx;
-#elif SPECULAR_MODE == 1
-	render_mode specular_toon;
-#else
-	render_mode specular_disabled;
+#elif defined(SPECULAR_TOON)
+		render_mode specular_toon;
+#elif defined(SPECULAR_DISABLED)
+		render_mode specular_disabled;
 #endif
 
-#if NO_DEPTH_TEST == 1
+#if defined(NO_DEPTH_TEST)
 	render_mode depth_test_disabled;
 #endif
 
-#if PARTICLE_TRAILS == 1
+#if defined(PARTICLE_TRAILS)
 	render_mode particle_trails;
 #endif
 
@@ -155,7 +109,7 @@ group_uniforms shape2;
 uniform bool use_shape2 = false;
 group_uniforms;
 
-#if SHAPE2
+#if defined(SHAPE2)
 	group_uniforms shape2.shape_texture;
 	uniform sampler2D shape2_main_texture: source_color, filter_nearest;
 	uniform vec2 shape2_main_texture_scale = vec2(1.);
@@ -195,7 +149,7 @@ group_uniforms shape3;
 uniform bool use_shape3 = false;
 group_uniforms;
 
-#if SHAPE3
+#if defined(SHAPE3)
 	group_uniforms shape3.shape_texture;
 	uniform sampler2D shape3_main_texture: source_color, filter_nearest;
 	uniform vec2 shape3_main_texture_scale = vec2(1.);
@@ -232,16 +186,16 @@ group_uniforms;
 #endif
 
 group_uniforms combine_shapes;
-#if SHAPE2 || SHAPE3
+#if defined(SHAPE2) || defined(SHAPE3)
 	uniform bool combine_additive = false;
 	uniform float shape1_color_weight: hint_range(0.0, 5.) = 1;
 	uniform float shape1_alpha_weight: hint_range(0.0, 5.) = 1;
 #endif
-#if SHAPE2
+#if defined(SHAPE2)
 	uniform float shape2_color_weight: hint_range(0.0, 5.) = 1;
 	uniform float shape2_alpha_weight: hint_range(0.0, 5.) = 1;
 #endif
-#if SHAPE3
+#if defined(SHAPE3)
 	uniform float shape3_color_weight: hint_range(0.0, 5.) = 1;
 	uniform float shape3_alpha_weight: hint_range(0.0, 5.) = 1;
 #endif
@@ -249,7 +203,7 @@ group_uniforms;
 
 group_uniforms color_face_tint;
 	uniform bool use_color_face_tint = false;
-#if COLOR_FACE_TINT
+#if defined(COLOR_FACE_TINT)
 	uniform vec3 backface_tint_color: source_color = vec3(0.5);
 	uniform vec3 frontface_tint_color: source_color = vec3(1.);
 #endif
@@ -257,7 +211,7 @@ group_uniforms;
 
 group_uniforms color_grading;
 uniform bool use_color_grading = false;
-#if COLOR_GRADING
+#if defined(COLOR_GRADING)
 	uniform vec3 color_grading_light_tone: source_color;
 	uniform vec3 color_grading_mid_tone: source_color;
 	uniform vec3 color_grading_dark_tone: source_color;
@@ -267,7 +221,7 @@ group_uniforms;
 
 group_uniforms color_ramp;
 uniform bool use_color_ramp = false;
-#if COLOR_RAMP
+#if defined(COLOR_RAMP)
 	uniform vec4 color_ramp_albedo: source_color = vec4(1.);
 	uniform sampler2D color_ramp_texture: source_color, repeat_disable;
 	uniform float color_ramp_luminosity: hint_range(-1., 1.) = 0.;
@@ -277,14 +231,14 @@ group_uniforms;
 
 group_uniforms color_posterize;
 uniform bool use_color_posterize = false;
-#if COLOR_POSTERIZE
+#if defined(COLOR_POSTERIZE)
 	uniform float color_posterize_num_colors: hint_range(0.0, 30.) = 5.;
 #endif
 group_uniforms;
 
 group_uniforms color_rim;
 uniform bool use_color_rim = false;
-#if COLOR_RIM
+#if defined(COLOR_RIM)
 	uniform vec4 rim_color: source_color = vec4(1.);
 	uniform float rim_bias: hint_range(0.0, 1.0) = 0.;
 	uniform float rim_scale: hint_range(0.0, 25.0) = 1.;
@@ -297,7 +251,7 @@ group_uniforms;
 
 group_uniforms color_glow;
 uniform bool use_color_glow = false;
-#if COLOR_GLOW
+#if defined(COLOR_GLOW)
 	uniform vec4 glow_color: source_color = vec4(1.);
 	uniform float glow_intensity = 0;
 	uniform float glow_intensity_global = 1;
@@ -308,7 +262,7 @@ group_uniforms;
 
 group_uniforms color_hsv_shift;
 uniform bool use_color_hsv_shift = false;
-#if COLOR_HSV_SHIFT
+#if defined(COLOR_HSV_SHIFT)
 	uniform float h_shift: hint_range(0.0, 360.0) = 180;
 	uniform float s_shift:  hint_range(0.0, 2.) = 1.;
 	uniform float v_shift: hint_range(0.0, 2.) = 1.;
@@ -317,7 +271,7 @@ group_uniforms;
 
 group_uniforms alpha_disolve;
 uniform bool use_alpha_disolve = false;
-#if ALPHA_DISOLVE
+#if defined(ALPHA_DISOLVE)
 	uniform sampler2D alpha_disolve_texture: source_color;
 	uniform vec2 alpha_disolve_texture_scale = vec2(1.);
 	uniform vec2 alpha_disolve_texture_offset = vec2(0.);
@@ -341,7 +295,7 @@ group_uniforms;
 
 group_uniforms alpha_mask;
 uniform bool use_alpha_mask = false;
-#if ALPHA_MASK
+#if defined(ALPHA_MASK)
 	uniform sampler2D alpha_mask_texture: source_color;
 	uniform vec2 alpha_mask_scale = vec2(1.);
 	uniform vec2 alpha_mask_offset = vec2(0.);
@@ -351,7 +305,7 @@ group_uniforms;
 
 group_uniforms alpha_remap;
 uniform bool use_alpha_remap = false;
-#if ALPHA_REMAP
+#if defined(ALPHA_REMAP)
 	uniform float alpha_remap_min: hint_range(0.0, 1.0) = 0;
 	uniform float alpha_remap_max: hint_range(0.0, 1.0) = 0.075;
 #endif
@@ -359,21 +313,21 @@ group_uniforms alpha_remap;
 
 group_uniforms alpha_cutoff;
 uniform bool use_alpha_cutoff = false;
-#if ALPHA_CUTOFF
+#if defined(ALPHA_CUTOFF)
 	uniform float alpha_cuttof_value: hint_range(0.001, 1.) = 0.5;
 #endif
 group_uniforms;
 
 group_uniforms uv_pixelate;
 uniform bool use_uv_pixelate = false;
-#if UV_PIXELATE
+#if defined(UV_PIXELATE)
 	uniform int uv_pixelate_size: hint_range(4, 512) = 32;
 #endif
 group_uniforms;
 
 group_uniforms uv_twist;
 uniform bool use_uv_twist = false;
-#if UV_TWIST
+#if defined(UV_TWIST)
 	uniform float uv_twist_amount: hint_range(0.0, 3.1415) = 1.;
 	uniform float uv_twist_pos_x: hint_range(0.0, 1.0) = 0.5;
 	uniform float uv_twist_pos_y: hint_range(0.0, 1.0) = 0.5;
@@ -383,7 +337,7 @@ group_uniforms;
 
 group_uniforms uv_handrawn;
 uniform bool use_uv_handrawn = false;
-#if UV_HANDRAWN
+#if defined(UV_HANDRAWN)
 	uniform float uv_handrawn_amount: hint_range(0.0, 40.0) = 10.;
 	uniform float uv_handrawn_speed: hint_range(0.0, 30.0) = 5.;
 #endif
@@ -391,7 +345,7 @@ group_uniforms;
 
 group_uniforms uv_shake;
 uniform bool use_uv_shake = false;
-#if UV_SHAKE
+#if defined(UV_SHAKE)
 	uniform float uv_shake_speed: hint_range(0.0, 50.0) = 20.;
 	uniform float uv_shake_x: hint_range(-15., 15) = 5;
 	uniform float uv_shake_y: hint_range(-15., 15) = 4;
@@ -400,7 +354,7 @@ group_uniforms;
 
 group_uniforms uv_wave;
 uniform bool use_uv_wave = false;
-#if UV_WAVE
+#if defined(UV_WAVE)
 	uniform float uv_wave_amount: hint_range(0.0, 25.0) = 7.;
 	uniform float uv_wave_speed: hint_range(0.0, 25.0) = 10.;
 	uniform float uv_wave_strength: hint_range(0.0, 25.0) = 7.5;
@@ -411,7 +365,7 @@ group_uniforms;
 
 group_uniforms uv_round_wave;
 uniform bool use_uv_round_wave = false;
-#if UV_ROUND_WAVE
+#if defined(UV_ROUND_WAVE)
 	uniform float uv_round_wave_strength: hint_range(0.0, 1.0) = 0.7;
 	uniform float uv_round_wave_speed: hint_range(0.0, 5.0) = 2.;
 #endif
@@ -419,7 +373,7 @@ group_uniforms;
 
 group_uniforms uv_global_distortion;
 uniform bool use_uv_global_distortion = false;
-#if UV_GLOBAL_DISTORTION
+#if defined(UV_GLOBAL_DISTORTION)
 	uniform vec2 uv_global_distortion_texture_scale = vec2(1.);
 	uniform vec2 uv_global_distortion_texture_offset = vec2(0.);
 	uniform sampler2D uv_global_distortion_texture: source_color;
@@ -430,7 +384,7 @@ group_uniforms;
 
 group_uniforms vertex_offset;
 uniform bool use_vertex_offset = false;
-#if VERTEX_OFFSET
+#if defined(VERTEX_OFFSET)
 	uniform sampler2D vertex_offset_texture: source_color;
 	uniform float vertex_offset_amount: hint_range(0.0, 2.) = 0.5;
 	uniform float vertex_offset_power: hint_range(0.01, 10.) = 1.;
@@ -440,21 +394,20 @@ group_uniforms;
 
 group_uniforms vertex_expand;
 uniform bool use_vertex_expand;
-#if VERTEX_EXPAND
+#if defined(VERTEX_EXPAND)
 	uniform vec3 vertex_expand_center = vec3(0.);
 	uniform bool vertex_expand_ignore_center_vertical = false;
 	uniform float vertex_expand_amount: hint_range(0.0, 10.) = 0.5;
 #endif
 group_uniforms;
 
-
-#if PARTICLE_OPTIONS
+#if defined(PARTICLE_OPTIONS)
 	group_uniforms particle;
 	uniform bool use_particle_trails = false;
 	uniform bool use_particle_anim = false;
 	group_uniforms;
 
-	#if PARTICLE_ANIM == 1
+	#if defined(PARTICLE_ANIM)
 		group_uniforms particle.particle_anim;
 		uniform int particles_anim_h_frames : hint_range(1, 128) = 1;
 		uniform int particles_anim_v_frames : hint_range(1, 128) = 1;
@@ -643,19 +596,19 @@ vec4 calculate_shape(
 
 void vertex() {
 
-	#if BILLBOARD == 1
+	#if defined(BILLBOARD_ENABLED)
 		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
 				MAIN_CAM_INV_VIEW_MATRIX[0],
 				MAIN_CAM_INV_VIEW_MATRIX[1],
 				MAIN_CAM_INV_VIEW_MATRIX[2],
 				MODEL_MATRIX[3]);
-	#elif BILLBOARD == 2
+	#elif defined(BILLBOARD_Y)
 		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
 				vec4(normalize(cross(vec3(0.0, 1.0, 0.0), MAIN_CAM_INV_VIEW_MATRIX[2].xyz)), 0.0),
 				vec4(0.0, 1.0, 0.0, 0.0),
 				vec4(normalize(cross(MAIN_CAM_INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0),
 				MODEL_MATRIX[3]);
-	#elif BILLBOARD == 3
+	#elif defined(BILLBOARD_PARTICLE)
 		mat4 mat_world = mat4(
 				normalize(INV_VIEW_MATRIX[0]),
 				normalize(INV_VIEW_MATRIX[1]),
@@ -669,7 +622,7 @@ void vertex() {
 		MODELVIEW_MATRIX = VIEW_MATRIX * mat_world;
 	#endif
 
-	#if BILLBOARD > 0 && BILLBOARD_KEEP_SCALE 1
+	#if (defined(BILLBOARD_ENABLED) || defined(BILLBOARD_Y) || defined(BILLBOARD_PARTICLE)) && defined(BILLBOARD_KEEP_SCALE)
 		MODELVIEW_MATRIX = MODELVIEW_MATRIX * mat4(
 				vec4(length(MODEL_MATRIX[0].xyz), 0.0, 0.0, 0.0),
 				vec4(0.0, length(MODEL_MATRIX[1].xyz), 0.0, 0.0),
@@ -683,7 +636,7 @@ void vertex() {
 
 	world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 1.0)).rgb);
 
-	#if VERTEX_OFFSET
+	#if defined(VERTEX_OFFSET)
 		if (use_vertex_offset)
 		{
 			vec2 offsetUV = UV;
@@ -693,7 +646,7 @@ void vertex() {
 		}
 	#endif
 
-	#if VERTEX_EXPAND
+	#if defined(VERTEX_EXPAND)
 		if (use_vertex_expand)
 		{
 			vec3 final_expand_center = vertex_expand_center;
@@ -706,7 +659,7 @@ void vertex() {
 		}
 	#endif
 
-	#if PARTICLE_OPTIONS && PARTICLE_ANIM
+	#if defined(PARTICLE_OPTIONS) && defined(PARTICLE_ANIM)
 		if (use_particle_anim)
 		{
 			float h_frames = float(particles_anim_h_frames);
@@ -726,11 +679,11 @@ void vertex() {
 	// check if using screenspace uv on shape2 or 3
 	bool using_shape2_screenspace_uv = false;
 	bool using_shape3_screenspace_uv = false;
-	#if SHAPE2
+	#if defined(SHAPE2)
 		using_shape2_screenspace_uv = shape2_use_screenspace_uv;
 	#endif
 
-	#if SHAPE3
+	#if defined(SHAPE3)
 		using_shape3_screenspace_uv = shape3_use_screenspace_uv;
 	#endif
 
@@ -754,7 +707,7 @@ void fragment() {
 	vec2 clampedUV = clamp(UV, vec2(0.001) + uv_floor_top_included, vec2(0.999) + uv_floor_top_included);
 	vec2 baseUV = clampedUV;
 
-	#if UV_PIXELATE
+	#if defined(UV_PIXELATE)
 		if (use_uv_pixelate)
 		{
 			float aspect_ratio = VIEWPORT_SIZE.x / VIEWPORT_SIZE.y;
@@ -763,7 +716,7 @@ void fragment() {
 		}
 	#endif
 
-	#if UV_TWIST
+	#if defined(UV_TWIST)
 		if (use_uv_twist)
 		{
 			vec2 twistUV = baseUV - vec2(uv_twist_pos_x * shape1_main_texture_scale.x,
@@ -782,7 +735,7 @@ void fragment() {
 		}
 	#endif
 
-	#if UV_HANDRAWN
+	#if defined(UV_HANDRAWN)
 		if (use_uv_handrawn)
 		{
 			vec2 handrawnUV = baseUV;
@@ -794,7 +747,7 @@ void fragment() {
 		}
 	#endif
 
-	#if UV_SHAKE
+	#if defined(UV_SHAKE)
 		if (use_uv_shake)
 		{
 			float x_shake = sin(TIME * uv_shake_speed * 50.) * uv_shake_x;
@@ -803,7 +756,7 @@ void fragment() {
 		}
 	#endif
 
-	#if UV_WAVE
+	#if defined(UV_WAVE)
 		if (use_uv_wave)
 		{
 			vec2 waveUV = vec2(uv_wave_x * shape1_main_texture_scale.x,
@@ -816,7 +769,7 @@ void fragment() {
 		}
 	#endif
 
-	#if UV_ROUND_WAVE
+	#if defined(UV_ROUND_WAVE)
 		if (use_uv_round_wave)
 		{
 			vec2 main_tex_size = vec2(textureSize(shape1_main_texture, 0));
@@ -829,7 +782,7 @@ void fragment() {
 		}
 	#endif
 
-	#if UV_GLOBAL_DISTORTION
+	#if defined(UV_GLOBAL_DISTORTION)
 		if (use_uv_global_distortion)
 		{
 			vec2 global_distortion_uv = baseUV;
@@ -880,7 +833,7 @@ void fragment() {
 	);
 
 	// calculate shape2 if defined
-	#if SHAPE2
+	#if defined(SHAPE2)
 
 		vec2 shape2UV;
 
@@ -917,7 +870,7 @@ void fragment() {
 	#endif
 
 	// calculate shape3 if defined
-	#if SHAPE3
+	#if defined(SHAPE3)
 
 		vec2 shape3UV;
 
@@ -956,7 +909,7 @@ void fragment() {
 	// ---combine shapes if more than one defined.---
 	vec4 color = shape1;
 
-	#if SHAPE2 || SHAPE3
+	#if defined(SHAPE2) || defined(SHAPE3)
 		if (combine_additive)
 		{
 			color.rgb = shape1.rgb * shape1_color_weight * shape1.a;
@@ -976,7 +929,7 @@ void fragment() {
 		}
 	#endif
 
-	#if SHAPE2
+	#if defined(SHAPE2)
 		if (combine_additive)
 		{
 			color.rgb += shape2.rgb * shape2_color_weight * shape2.a;
@@ -992,7 +945,7 @@ void fragment() {
 		}
 	#endif
 
-	#if SHAPE3
+	#if defined(SHAPE3)
 		if (combine_additive)
 		{
 			color.rgb += shape3.rgb * shape3_color_weight * shape3.a;
@@ -1038,7 +991,7 @@ void fragment() {
 		//luminance *= color.a;
 	//}
 
-	#if ALPHA_DISOLVE
+	#if defined(ALPHA_DISOLVE)
 		if (use_alpha_disolve)
 		{
 			float luminance = get_color_luminance(color);
@@ -1085,7 +1038,7 @@ void fragment() {
 		}
 	#endif
 
-	#if COLOR_FACE_TINT
+	#if defined(COLOR_FACE_TINT)
 		if (use_color_face_tint)
 		{
 			color.rgb = mix(
@@ -1096,7 +1049,7 @@ void fragment() {
 	#endif
 
 	// apply color grading if defined
-	#if COLOR_GRADING
+	#if defined(COLOR_GRADING)
 		if (use_color_grading)
 		{
 			float luminance = get_color_luminance(color);
@@ -1121,7 +1074,7 @@ void fragment() {
 	#endif
 
 	// apply color ramp if defined
-	#if COLOR_RAMP
+	#if defined(COLOR_RAMP)
 		if (use_color_ramp)
 		{
 			float luminance = get_color_luminance(color);
@@ -1132,14 +1085,14 @@ void fragment() {
 		}
 	#endif
 
-	#if COLOR_POSTERIZE
+	#if defined(COLOR_POSTERIZE)
 		if (use_color_posterize)
 		{
 			color.rgb = floor(color.rgb / (1.0 / color_posterize_num_colors)) * (1.0 / color_posterize_num_colors);
 		}
 	#endif
 
-	#if COLOR_RIM
+	#if defined(COLOR_RIM)
 		if (use_color_rim)
 		{
 			float ndv = 1. - abs(dot(NORMAL, VIEW));
@@ -1158,7 +1111,7 @@ void fragment() {
 		}
 	#endif
 
-	#if COLOR_GLOW
+	#if defined(COLOR_GLOW)
 		if (use_color_glow)
 		{
 			float glow_mask = 1.;
@@ -1179,7 +1132,7 @@ void fragment() {
 		}
 	#endif
 
-	#if COLOR_HSV_SHIFT
+	#if defined(COLOR_HSV_SHIFT)
 		if (use_color_hsv_shift)
 		{
 			vec3 result_hsv = vec3(color.rgb);
@@ -1198,7 +1151,7 @@ void fragment() {
 		}
 	#endif
 
-	#if ALPHA_MASK
+	#if defined(ALPHA_MASK)
 		if (use_alpha_mask)
 		{
 			vec2 alphaMaskUV = clampedUV;
@@ -1209,19 +1162,19 @@ void fragment() {
 		}
 	#endif
 
-	#if ALPHA_REMAP
+	#if defined(ALPHA_REMAP)
 		if (use_alpha_remap)
 		{
 			color.a = smoothstep(alpha_remap_min, alpha_remap_max, color.a);
 		}
 	#endif
 
-	#if ALPHA_CUTOFF
+	#if defined(ALPHA_CUTOFF)
 		if (use_alpha_cutoff)
 		{
 			if (((1. - alpha_cuttof_value) - (1. - color.a) - 0.01) < 0.)
 			{
-				discard;
+				color.a = 0.;
 			}
 		}
 	#endif
