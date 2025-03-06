@@ -5,7 +5,6 @@
 
 shader_type canvas_item;
 
-
 #define BLEND_MIX
 //#define BLEND_ADD
 //#define BLEND_SUB
@@ -24,10 +23,16 @@ shader_type canvas_item;
 #define COLOR_HSV_SHIFT
 
 #define ALPHA_DISOLVE
+#define ALPHA_DISOLVE_BURN
+
 #define ALPHA_MASK
 #define ALPHA_REMAP
 #define ALPHA_CUTOFF
 
+#define UV_ROTATION
+#define UV_SCROLL
+#define UV_POLAR
+#define UV_DISTORTION
 #define UV_PIXELATE
 #define UV_TWIST
 #define UV_HANDRAWN

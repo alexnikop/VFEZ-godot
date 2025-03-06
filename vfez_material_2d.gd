@@ -140,6 +140,8 @@ func _update_shader_code():
 			# if use_ shader parameter is true (1) then set the define option
 			# to enable the effect	
 			if shader_parameter != null && int(shader_parameter) == 1:
+				# extract define option from shader_parameter name
+				# for example use_uv_wave becomes -> UV_WAVE
 				var define_option = uniform_name.replace("use_", "").to_upper()
 				template_code += "#define %s\n" % define_option
 	

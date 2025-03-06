@@ -23,41 +23,63 @@
 	render_mode blend_premul_alpha;
 #endif
 
-group_uniforms general;
-uniform vec3 global_color: source_color = vec3(1.);
-uniform float global_alpha: hint_range(0.0, 1.0) = 1.;
-uniform bool additive_config = false;
-uniform bool premultiply_color = false;
-uniform bool premultiply_alpha = false;
-group_uniforms;
-
-group_uniforms basic;
+group_uniforms base;
 uniform vec2 texture_scale = vec2(1.);
 uniform vec2 texture_offset = vec2(0.);
-uniform vec4 texture_color: source_color = vec4(1.);
-uniform bool texture_red_as_alpha = false;
 uniform vec2 texture_scroll_speed = vec2(0.);
-uniform float texture_rotation_offset: hint_range(0.0, 6.28318530718) = 0.;
-uniform float texture_rotation_speed = 0.;
-group_uniforms;
-
-group_uniforms contrast_brightness;
+uniform bool replicate_texture_on_scale = true;
+uniform bool apply_scale_offset_after_uv_effects;
+uniform vec4 texture_color: source_color = vec4(1.);
+uniform float texture_alpha: hint_range(0.0, 1.0) = 1.;
+uniform bool texture_red_as_alpha = false;
+uniform bool premultiply_color = false;
+uniform bool premultiply_alpha = false;
 uniform float contrast: hint_range(0.0, 10) = 1.;
 uniform float brightness: hint_range(-1., 1.) = 0.;
 group_uniforms;
 
-group_uniforms distortion;
-uniform sampler2D distortion_tex: source_color;
-uniform vec2 distortion_tex_scale = vec2(1.);
-uniform vec2 distortion_tex_offset = vec2(0.);
-uniform float distortion_amount: hint_range(0.0, 10) = 0.0;
-uniform vec2 distortion_speed = vec2(0.1);
+group_uniforms outline;
+uniform bool use_outline;
+
+#if defined(OUTLINE)
+	uniform vec3 outline_color: source_color;
+	uniform float outline_alpha: hint_range(0.0, 1.0) = 1.0;
+	uniform float outline_glow;
+	uniform float outline_width;
+	uniform bool only_render_outline;
+#endif
 group_uniforms;
 
-group_uniforms polar_uv;
-uniform bool use_polar_uv = false;
-uniform vec2 polar_uv_center = vec2(0.5);
-uniform bool distortion_uses_polar_uvs = false;
+#if defined(OUTLINE)
+	group_uniforms outline.pixel_perfect;
+	uniform bool use_pixel_perfect_outline;
+	uniform int outline_pixel_width;
+	group_uniforms;
+#endif
+
+#if defined(OUTLINE)
+	group_uniforms outline.texture;
+	uniform bool use_outline_texture;
+	uniform sampler2D outline_texture;
+	uniform vec2 outline_texture_scale = vec2(1.);
+	uniform vec2 outline_texture_offset = vec2(0.);
+	uniform vec2 outline_texture_scroll_speed = vec2(0.);
+	group_uniforms;
+#endif
+
+#if defined(OUTLINE)
+	group_uniforms outline.distortion;
+	uniform bool use_outline_distortion;
+	uniform sampler2D outline_distortion_texture;
+	uniform vec2 outline_distortion_texture_scale = vec2(1.);
+	uniform vec2 outline_distortion_texture_offset = vec2(0.);
+	uniform vec2 outline_distortion_texture_scroll_speed = vec2(0.);
+	uniform float outline_distortion_amount;
+	group_uniforms;
+#endif
+
+group_uniforms rect_size;
+uniform float rect_size_ratio: hint_range(1.0, 5.0) = 1.0;
 group_uniforms;
 
 group_uniforms color_grading;
@@ -107,6 +129,16 @@ uniform bool use_color_hsv_shift = false;
 #endif
 group_uniforms;
 
+group_uniforms color_shadow;
+uniform bool use_color_shadow = false;
+#if defined(COLOR_SHADOW)
+	uniform float color_shadow_x: hint_range(-0.5, 0.5) = 0.1;
+	uniform float color_shadow_y: hint_range(-0.5, 0.5) = 0.1;
+	uniform float color_shadow_alpha: hint_range(0., 1.) = 0.5;
+	uniform vec3 color_shadow_color: source_color = vec3(0.);
+#endif
+group_uniforms;
+
 group_uniforms alpha_disolve;
 uniform bool use_alpha_disolve = false;
 #if defined(ALPHA_DISOLVE)
@@ -153,6 +185,33 @@ group_uniforms alpha_cutoff;
 uniform bool use_alpha_cutoff = false;
 #if defined(ALPHA_CUTOFF)
 	uniform float alpha_cuttof_value: hint_range(0.001, 1.) = 0.5;
+#endif
+group_uniforms;
+
+group_uniforms uv_rotation;
+uniform bool use_uv_rotation;
+#if defined(UV_ROTATION)
+	uniform float uv_rotation_offset: hint_range(0.0, 6.28318530718) = 0.;
+	uniform float uv_rotation_speed = 0.;
+#endif
+group_uniforms;
+
+group_uniforms uv_distortion;
+uniform bool use_uv_distortion;
+#if defined(UV_DISTORTION)
+	uniform sampler2D distortion_tex: source_color;
+	uniform vec2 distortion_tex_scale = vec2(1.);
+	uniform vec2 distortion_tex_offset = vec2(0.);
+	uniform float distortion_amount: hint_range(0.0, 10) = 0.0;
+	uniform vec2 distortion_speed = vec2(0.1);
+#endif
+group_uniforms;
+
+group_uniforms uv_polar;
+uniform bool use_uv_polar = false;
+#if defined(UV_POLAR)
+	uniform vec2 uv_polar_center = vec2(0.5);
+	uniform bool distortion_uses_uv_polar = false;
 #endif
 group_uniforms;
 
@@ -221,7 +280,11 @@ group_uniforms;
 // helper functions ------------------------------------------
 vec2 transform_uv(vec2 uv, vec2 scale, vec2 offset)
 {
-	return uv * scale + offset;
+	uv = uv * scale + offset;
+	if (replicate_texture_on_scale)
+		uv = fract(uv);
+	return uv;
+
 }
 
 vec2 uv_polar(vec2 uv, vec2 center)
@@ -231,7 +294,6 @@ vec2 uv_polar(vec2 uv, vec2 center)
 	float angle = atan(dir.y, dir.x) / (2. * PI);
 	vec2 polarUV = vec2(angle, radius);
 	//baseUV = mod(vec2(radius, angle), 1.0);
-	polarUV *= texture_scale;
 	return polarUV;
 }
 
@@ -250,6 +312,8 @@ vec4 sample_texture_with_scroll(sampler2D tex, vec2 uv, vec2 scroll_speed, float
 {
 	uv.x += mod(time * scroll_speed.x, 1);
 	uv.y += mod(time * scroll_speed.y, 1);
+	if (scroll_speed != vec2(0.))
+		uv = fract(uv);
 	return texture(tex, uv);
 }
 
@@ -283,114 +347,6 @@ float get_color_luminance(vec4 color)
 
 // helper functions end -----------------------------------------
 
-// calculate single shape function ------------------------------
-
-vec4 calculate_shape(
-	vec2 baseUV,
-	sampler2D shape_main_texture,
-	vec2 shape_main_texture_scale,
-	vec2 shape_main_texture_offset,
-	sampler2D shape_distortion_texture,
-	vec2 shape_distortion_texture_scale,
-	vec2 shape_distortion_texture_offset,
-	float shape_distortion_amount,
-	vec2 shape_distortion_speed,
-	float shape_rotation_speed,
-	float shape_rotation_offset,
-	vec2 shape_scroll_speed,
-	bool shape_red_as_alpha,
-	vec4 shape_color,
-	float shape_contrast,
-	float shape_brightness,
-	bool shape_use_polar_uv,
-	vec2 shape_polar_uv_center,
-	bool shape_distortion_uses_polar_uvs
-	)
-{
-	vec2 shapeUV = baseUV;
-
-	if (shape_use_polar_uv)
-	{
-		shapeUV = uv_polar(shapeUV, shape_polar_uv_center);
-	}
-
-	shapeUV = transform_uv(
-					shapeUV,
-					shape_main_texture_scale,
-					shape_main_texture_offset);
-
-
-	if (shape_distortion_amount > 0.)
-	{
-		vec2 distort_uvs = baseUV;
-
-		//distort_uvs
-		vec2 distortionUV = baseUV;
-		distortionUV = transform_uv(
-						distortionUV,
-						shape_distortion_texture_scale,
-						shape_distortion_texture_offset);
-
-		if (shape_use_polar_uv && shape_distortion_uses_polar_uvs)
-		{
-			distortionUV = uv_polar(distortionUV, shape_polar_uv_center);
-		}
-
-		distortionUV += mod(TIME * shape_distortion_speed, vec2(1.));
-
-		float distortAmount =
-			(texture(shape_distortion_texture, distortionUV).r - 0.5) * 0.2 * shape_distortion_amount;
-		shapeUV += vec2(1.) * distortAmount;
-	}
-
-	shapeUV = rotate_uvs(
-		shapeUV,
-		shape_rotation_offset + mod(shape_rotation_speed * TIME, TAU),
-		shape_main_texture_scale,
-		shape_main_texture_offset);
-
-
-	vec4 shape = sample_texture_with_scroll(
-		shape_main_texture,
-		shapeUV,
-		shape_scroll_speed,
-		TIME);
-
-	if (shape_red_as_alpha)
-	{
-		shape = vec4(shape_color.rgb, shape.r);
-	}
-	else
-	{
-		shape *= shape_color;
-	}
-
-	bool apply_contrast = shape_contrast != 1. || shape_brightness != 0.;
-
-	if (apply_contrast)
-	{
-		if (shape_red_as_alpha)
-		{
-			shape.a = clamp(
-				(shape.a - 0.5) * shape_contrast + 0.5 + shape_brightness,
-				0.,
-				1.);
-		}
-		else
-		{
-			shape.rgb = vec3(
-					max(0, (shape.r - 0.5) * shape_contrast + 0.5 + shape_brightness),
-					max(0, (shape.g - 0.5) * shape_contrast + 0.5 + shape_brightness),
-					max(0, (shape.b - 0.5) * shape_contrast + 0.5 + shape_brightness)
-				);
-		}
-	}
-
-	return shape;
-}
-
-// ---------------------------------------------------
-
 void vertex() {
 	#if defined(PARTICLE_ANIM)
 		if (use_particle_anim)
@@ -408,14 +364,20 @@ void vertex() {
 			UV += vec2(mod(particle_frame, h_frames) / h_frames, floor((particle_frame + 0.5) / h_frames) / v_frames);
 		}
 	#endif
+
+	VERTEX += VERTEX * (rect_size_ratio - 1.0);
 }
 
 void fragment() {
+	vec2 baseUV = UV;
 
-	// clamp UVS near edges (0., 1., 2., 3., 4., 5.) to reduce folding artifacts
-	vec2 uv_floor_top_included = max(vec2(0.), ceil(UV) - vec2(1.));
-	vec2 clampedUV = clamp(UV, vec2(0.001) + uv_floor_top_included, vec2(0.999) + uv_floor_top_included);
-	vec2 baseUV = clampedUV;
+	baseUV = baseUV * rect_size_ratio + vec2(-rect_size_ratio * 0.5 + 0.5);
+
+	if (!apply_scale_offset_after_uv_effects)
+		baseUV = transform_uv(
+						baseUV,
+						texture_scale,
+						texture_offset);
 
 	#if defined(UV_PIXELATE)
 		if (use_uv_pixelate)
@@ -494,36 +456,94 @@ void fragment() {
 		}
 	#endif
 
-	vec2 shape1UV;
-	shape1UV = baseUV;
+	#if defined(UV_POLAR)
+		if (use_uv_polar)
+		{
+			baseUV = uv_polar(baseUV, uv_polar_center);
+		}
+	#endif
 
-	// calculate shape 1
-	vec4 shape1 = calculate_shape(
-		shape1UV,
-		TEXTURE,
-		texture_scale,
-		texture_offset,
-		distortion_tex,
-		distortion_tex_scale,
-		distortion_tex_offset,
-		distortion_amount,
-		distortion_speed,
-		texture_rotation_speed,
-		texture_rotation_offset,
-		texture_scroll_speed,
-		texture_red_as_alpha,
-		texture_color,
-		contrast,
-		brightness,
-		use_polar_uv,
-		polar_uv_center,
-		distortion_uses_polar_uvs
-	);
+	#if defined(UV_DISTORTION)
+		if (use_uv_distortion && distortion_amount > 0.)
+		{
+			vec2 distort_uvs = baseUV;
 
-	// ---combine shapes if more than one defined.---
-	vec4 color = shape1;
+			//distort_uvs
+			vec2 distortionUV = baseUV;
+			distortionUV = transform_uv(
+							distortionUV,
+							distortion_tex_scale,
+							distortion_tex_offset);
 
-	color.a = clamp(color.a, 0., 1.);
+			#if defined(UV_POLAR)
+				if (use_uv_polar && distortion_uses_uv_polar)
+				{
+					distortionUV = uv_polar(distortionUV, uv_polar_center);
+				}
+			#endif
+
+			distortionUV += mod(TIME * distortion_speed, vec2(1.));
+			distortionUV = fract(distortionUV);
+
+			float distortAmount =
+				(texture(distortion_tex, distortionUV).r - 0.5) * 0.2 * distortion_amount;
+			baseUV += vec2(1.) * distortAmount;
+		}
+	#endif
+
+	#if defined(UV_ROTATION)
+	if (use_uv_rotation)
+	{
+		baseUV = rotate_uvs(
+			baseUV,
+			uv_rotation_offset + mod(uv_rotation_speed * TIME, TAU),
+			texture_scale,
+			texture_offset);
+	}
+	#endif
+
+
+	if (apply_scale_offset_after_uv_effects)
+		baseUV = transform_uv(
+						baseUV,
+						texture_scale,
+						texture_offset);
+
+	vec4 color = sample_texture_with_scroll(
+			TEXTURE,
+			baseUV,
+			texture_scroll_speed,
+			TIME);
+
+	if (texture_red_as_alpha)
+	{
+		color = vec4(texture_color.rgb * color.rgb, color.r);
+	}
+	else
+	{
+		color *= texture_color;
+	}
+
+	bool apply_contrast = contrast != 1. || brightness != 0.;
+
+	if (apply_contrast)
+	{
+		if (texture_red_as_alpha)
+		{
+			color.a = clamp(
+				(color.a - 0.5) * contrast + 0.5 + brightness,
+				0.,
+				1.);
+		}
+		else
+		{
+			color.rgb = vec3(
+					max(0, (color.r - 0.5) * contrast + 0.5 + brightness),
+					max(0, (color.g - 0.5) * contrast + 0.5 + brightness),
+					max(0, (color.b - 0.5) * contrast + 0.5 + brightness)
+				);
+		}
+	}
 
 	// ----------------------------------------------
 
@@ -539,29 +559,17 @@ void fragment() {
 		color.a = min(luminance, color.a);
 	}
 
-	color.rgb *= global_color;
-
 	/// apply premultiply alpha
 	if (premultiply_alpha)
 	{
 		color.rgb *= color.a;
 	}
 
-	//if (!premultiply_color)
-	//{
-		//luminance = 0.3 * color.r + 0.59 * color.g + 0.11 * color.b;
-		//luminance *= color.a;
-	//}
-
 	#if defined(ALPHA_DISOLVE)
 		if (use_alpha_disolve)
 		{
 			float luminance = get_color_luminance(color);
 			float pre_disolve_alpha = color.a;
-			if (additive_config && !premultiply_color)
-			{
-				pre_disolve_alpha *= luminance;
-			}
 
 			float disolve_amount = clamp(alpha_disolve_amount + (1. - COLOR.a), 0., 1.);
 			float disolve_transition = max(0.01, alpha_disolve_transition * ease_out_quint(disolve_amount));
@@ -655,11 +663,6 @@ void fragment() {
 			}
 
 			float glow_mult = 1.;
-			if (additive_config)
-			{
-				float luminance = get_color_luminance(color);
-				glow_mult = luminance;
-			}
 			color.rgb *= glow_intensity_global * glow_mask;
 			color.rgb += glow_color.rgb * glow_intensity * glow_mask * color.a * glow_mult;
 		}
@@ -684,10 +687,89 @@ void fragment() {
 		}
 	#endif
 
+	#if defined(COLOR_SHADOW)
+		if (use_color_shadow)
+		{
+			vec2 shadowOffset = vec2(color_shadow_x, color_shadow_y);
+			float shadowA = texture(TEXTURE, baseUV + shadowOffset).a;
+			color.rgb *= 1. - (shadowA - color.a) * (1. - color.a);
+			color.rgb += color_shadow_color * shadowA * (1. - color.a);
+			color = clamp(color, 0., 1.);
+			color.a = max(shadowA * color_shadow_alpha, color.a);
+		}
+	#endif
+
+	#if defined(OUTLINE)
+		if (use_outline)
+		{
+			vec2 destUV;
+			if (use_pixel_perfect_outline)
+			{
+				destUV = TEXTURE_PIXEL_SIZE * float(outline_pixel_width);
+			}
+			else
+			{
+				destUV = TEXTURE_PIXEL_SIZE * float(outline_width) * 200.;
+			}
+
+			if (use_outline_distortion)
+			{
+				vec2 outlineDistUV = transform_uv(
+					baseUV,
+					outline_distortion_texture_scale,
+					outline_distortion_texture_offset);
+
+				outlineDistUV += mod(TIME * outline_distortion_texture_scroll_speed,vec2(1.));
+				outlineDistUV = fract(outlineDistUV);
+
+				float outlineDistAmount =
+					(texture(outline_distortion_texture, outlineDistUV).r - 0.5) * 0.2 * outline_distortion_amount;
+				destUV += vec2(outlineDistAmount);
+			}
+
+			float left = texture(TEXTURE, baseUV + vec2(destUV.x, 0.)).a;
+			float right = texture(TEXTURE, baseUV - vec2(destUV.x, 0.)).a;
+			float bottom = texture(TEXTURE, baseUV + vec2(0., destUV.y)).a;
+			float top = texture(TEXTURE, baseUV - vec2(0., destUV.y)).a;
+			float result = left + right + bottom + top;
+
+			result = step(0.05, clamp(result, 0., 1.));
+
+			vec4 final_outline_color = vec4(outline_color, 1.0);
+
+			if (use_outline_texture)
+			{
+				vec2 outlineTexUV = transform_uv(
+					baseUV,
+					outline_texture_scale,
+					outline_texture_offset);
+
+				outlineTexUV += mod(TIME * outline_texture_scroll_speed,vec2(1.));
+				outlineTexUV = fract(outlineTexUV);
+				final_outline_color *= texture(outline_texture, outlineTexUV);
+			}
+
+			result *= (1. - color.a) * outline_alpha;
+			vec4 outline = final_outline_color;
+			outline.rgb *= outline_glow;
+			outline.a = result;
+
+			if (only_render_outline)
+			{
+				color = outline;
+			}
+			else
+			{
+				color = mix(color, outline, result);
+			}
+
+		}
+	#endif
+
 	#if defined(ALPHA_MASK)
 		if (use_alpha_mask)
 		{
-			vec2 alphaMaskUV = clampedUV;
+			vec2 alphaMaskUV = baseUV;
 			alphaMaskUV = transform_uv(alphaMaskUV, alpha_mask_scale, alpha_mask_offset);
 			vec4 alpha_mask_sample = texture(alpha_mask_texture, alphaMaskUV);
 			float mask = pow(min(alpha_mask_sample.r, alpha_mask_sample.a), alpha_mask_power);
@@ -712,12 +794,6 @@ void fragment() {
 		}
 	#endif
 
-	color.a = color.a * global_alpha;
-
-	if (additive_config)
-	{{
-		color.rgb *= color.a;
-	}}
-
+	color.a *= texture_alpha;
 	COLOR = color;
 }
