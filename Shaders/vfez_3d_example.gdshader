@@ -1,7 +1,9 @@
-shader_type spatial;
+// this code servers as an example VFEZ3D shader
+// that uses the VFEZ3D template. Files like this are
+// automatically generated using the VFEZMaterial but you
+// can also create them manually like the example below.
 
-// shader options. change flags to
-// include or exclude parts from compiled shader
+shader_type spatial;
 
 #define BLEND_MIX
 //#define BLEND_ADD

@@ -7,6 +7,8 @@
 
 #if defined(UNSHADED)
 	render_mode unshaded;
+#elif defined(LIGHT_ONLY)
+	render_mode light_only;
 #endif
 
 #if defined(BLEND_MIX)
@@ -21,14 +23,6 @@
 	render_mode blend_premul_alpha;
 #endif
 
-#if defined(NO_DEPTH_TEST)
-	render_mode depth_test_disabled;
-#endif
-
-#if defined(PARTICLE_TRAILS)
-	render_mode particle_trails;
-#endif
-
 group_uniforms general;
 uniform vec3 global_color: source_color = vec3(1.);
 uniform float global_alpha: hint_range(0.0, 1.0) = 1.;
@@ -37,41 +31,33 @@ uniform bool premultiply_color = false;
 uniform bool premultiply_alpha = false;
 group_uniforms;
 
-group_uniforms shape1.shape_texture;
-uniform vec2 shape1_main_texture_scale = vec2(1.);
-uniform vec2 shape1_main_texture_offset = vec2(0.);
-uniform vec4 shape1_color: source_color = vec4(1.);
-uniform bool shape1_red_as_alpha = false;
-uniform vec2 shape1_scroll_speed = vec2(0.);
-uniform float shape1_rotation_offset: hint_range(0.0, 6.28318530718) = 0.;
-uniform float shape1_rotation_speed = 0.;
+group_uniforms basic;
+uniform vec2 texture_scale = vec2(1.);
+uniform vec2 texture_offset = vec2(0.);
+uniform vec4 texture_color: source_color = vec4(1.);
+uniform bool texture_red_as_alpha = false;
+uniform vec2 texture_scroll_speed = vec2(0.);
+uniform float texture_rotation_offset: hint_range(0.0, 6.28318530718) = 0.;
+uniform float texture_rotation_speed = 0.;
 group_uniforms;
 
-group_uniforms shape1.contrast_brightness;
-uniform float shape1_contrast: hint_range(0.0, 10) = 1.;
-uniform float shape1_brightness: hint_range(-1., 1.) = 0.;
+group_uniforms contrast_brightness;
+uniform float contrast: hint_range(0.0, 10) = 1.;
+uniform float brightness: hint_range(-1., 1.) = 0.;
 group_uniforms;
 
-group_uniforms shape1.distortion;
-uniform sampler2D shape1_distortion_texture: source_color;
-uniform vec2 shape1_distortion_texture_scale = vec2(1.);
-uniform vec2 shape1_distortion_texture_offset = vec2(0.);
-uniform float shape1_distortion_amount: hint_range(0.0, 10) = 0.0;
-uniform vec2 shape1_distortion_speed = vec2(0.1);
+group_uniforms distortion;
+uniform sampler2D distortion_tex: source_color;
+uniform vec2 distortion_tex_scale = vec2(1.);
+uniform vec2 distortion_tex_offset = vec2(0.);
+uniform float distortion_amount: hint_range(0.0, 10) = 0.0;
+uniform vec2 distortion_speed = vec2(0.1);
 group_uniforms;
 
-group_uniforms shape1.polar_uv;
-uniform bool shape1_use_polar_uv = false;
-uniform vec2 shape1_polar_uv_center = vec2(0.5);
-uniform bool shape1_distortion_polar_uvs = false;
-group_uniforms;
-
-group_uniforms color_face_tint;
-	uniform bool use_color_face_tint = false;
-#if defined(COLOR_FACE_TINT)
-	uniform vec3 backface_tint_color: source_color = vec3(0.5);
-	uniform vec3 frontface_tint_color: source_color = vec3(1.);
-#endif
+group_uniforms polar_uv;
+uniform bool use_polar_uv = false;
+uniform vec2 polar_uv_center = vec2(0.5);
+uniform bool distortion_uses_polar_uvs = false;
 group_uniforms;
 
 group_uniforms color_grading;
@@ -223,43 +209,14 @@ uniform bool use_uv_round_wave = false;
 #endif
 group_uniforms;
 
-group_uniforms uv_global_distortion;
-uniform bool use_uv_global_distortion = false;
-#if defined(UV_GLOBAL_DISTORTION)
-	uniform vec2 uv_global_distortion_texture_scale = vec2(1.);
-	uniform vec2 uv_global_distortion_texture_offset = vec2(0.);
-	uniform sampler2D uv_global_distortion_texture: source_color;
-	uniform vec2 uv_global_distortion_speed;
-	uniform float uv_global_distortion_amount: hint_range(0.0, 10.0) = 0.5;
+group_uniforms particle_anim;
+uniform bool use_particle_anim = false;
+#if defined(PARTICLE_ANIM)
+	uniform int particles_anim_h_frames : hint_range(1, 128) = 1;
+	uniform int particles_anim_v_frames : hint_range(1, 128) = 1;
+	uniform bool particles_anim_loop;
 #endif
 group_uniforms;
-
-group_uniforms vertex_expand;
-uniform bool use_vertex_expand;
-#if defined(VERTEX_EXPAND)
-	uniform vec2 vertex_expand_center = vec2(0.);
-	uniform float vertex_expand_amount: hint_range(0.0, 10.) = 0.5;
-#endif
-group_uniforms;
-
-#if defined(PARTICLE_OPTIONS)
-	group_uniforms particle;
-	uniform bool use_particle_trails = false;
-	uniform bool use_particle_anim = false;
-	group_uniforms;
-
-	#if defined(PARTICLE_ANIM)
-		group_uniforms particle.particle_anim;
-		uniform int particles_anim_h_frames : hint_range(1, 128) = 1;
-		uniform int particles_anim_v_frames : hint_range(1, 128) = 1;
-		uniform bool particles_anim_loop;
-		group_uniforms;
-	#endif
-#endif
-
-varying vec3 view_direction;
-varying vec3 world_normal;
-
 
 // helper functions ------------------------------------------
 vec2 transform_uv(vec2 uv, vec2 scale, vec2 offset)
@@ -274,7 +231,7 @@ vec2 uv_polar(vec2 uv, vec2 center)
 	float angle = atan(dir.y, dir.x) / (2. * PI);
 	vec2 polarUV = vec2(angle, radius);
 	//baseUV = mod(vec2(radius, angle), 1.0);
-	polarUV *= shape1_main_texture_scale;
+	polarUV *= texture_scale;
 	return polarUV;
 }
 
@@ -347,7 +304,7 @@ vec4 calculate_shape(
 	float shape_brightness,
 	bool shape_use_polar_uv,
 	vec2 shape_polar_uv_center,
-	bool shape_distortion_polar_uvs
+	bool shape_distortion_uses_polar_uvs
 	)
 {
 	vec2 shapeUV = baseUV;
@@ -374,7 +331,7 @@ vec4 calculate_shape(
 						shape_distortion_texture_scale,
 						shape_distortion_texture_offset);
 
-		if (shape_use_polar_uv && shape_distortion_polar_uvs)
+		if (shape_use_polar_uv && shape_distortion_uses_polar_uvs)
 		{
 			distortionUV = uv_polar(distortionUV, shape_polar_uv_center);
 		}
@@ -435,51 +392,7 @@ vec4 calculate_shape(
 // ---------------------------------------------------
 
 void vertex() {
-
-	#if defined(BILLBOARD_ENABLED)
-		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
-				MAIN_CAM_INV_VIEW_MATRIX[0],
-				MAIN_CAM_INV_VIEW_MATRIX[1],
-				MAIN_CAM_INV_VIEW_MATRIX[2],
-				MODEL_MATRIX[3]);
-	#elif defined(BILLBOARD_Y)
-		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
-				vec4(normalize(cross(vec3(0.0, 1.0, 0.0), MAIN_CAM_INV_VIEW_MATRIX[2].xyz)), 0.0),
-				vec4(0.0, 1.0, 0.0, 0.0),
-				vec4(normalize(cross(MAIN_CAM_INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0),
-				MODEL_MATRIX[3]);
-	#elif defined(BILLBOARD_PARTICLE)
-		mat4 mat_world = mat4(
-				normalize(INV_VIEW_MATRIX[0]),
-				normalize(INV_VIEW_MATRIX[1]),
-				normalize(INV_VIEW_MATRIX[2]),
-				MODEL_MATRIX[3]);
-		mat_world = mat_world * mat4(
-				vec4(cos(INSTANCE_CUSTOM.x), -sin(INSTANCE_CUSTOM.x), 0.0, 0.0),
-				vec4(sin(INSTANCE_CUSTOM.x), cos(INSTANCE_CUSTOM.x), 0.0, 0.0),
-				vec4(0.0, 0.0, 1.0, 0.0),
-				vec4(0.0, 0.0, 0.0, 1.0));
-		MODELVIEW_MATRIX = VIEW_MATRIX * mat_world;
-	#endif
-
-	#if (defined(BILLBOARD_ENABLED) || defined(BILLBOARD_Y) || defined(BILLBOARD_PARTICLE)) && defined(BILLBOARD_KEEP_SCALE)
-		MODELVIEW_MATRIX = MODELVIEW_MATRIX * mat4(
-				vec4(length(MODEL_MATRIX[0].xyz), 0.0, 0.0, 0.0),
-				vec4(0.0, length(MODEL_MATRIX[1].xyz), 0.0, 0.0),
-				vec4(0.0, 0.0, length(MODEL_MATRIX[2].xyz), 0.0),
-				vec4(0.0, 0.0, 0.0, 1.0));
-		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
-	#endif
-
-	#if defined(VERTEX_EXPAND)
-		if (use_vertex_expand)
-		{
-			vec2 expand_dir = normalize(VERTEX - vertex_expand_center);
-			VERTEX += expand_dir * vertex_expand_amount;
-		}
-	#endif
-
-	#if defined(PARTICLE_OPTIONS) && defined(PARTICLE_ANIM)
+	#if defined(PARTICLE_ANIM)
 		if (use_particle_anim)
 		{
 			float h_frames = float(particles_anim_h_frames);
@@ -495,7 +408,6 @@ void vertex() {
 			UV += vec2(mod(particle_frame, h_frames) / h_frames, floor((particle_frame + 0.5) / h_frames) / v_frames);
 		}
 	#endif
-	
 }
 
 void fragment() {
@@ -518,18 +430,18 @@ void fragment() {
 	#if defined(UV_TWIST)
 		if (use_uv_twist)
 		{
-			vec2 twistUV = baseUV - vec2(uv_twist_pos_x * shape1_main_texture_scale.x,
-										uv_twist_pos_y * shape1_main_texture_scale.y);
+			vec2 twistUV = baseUV - vec2(uv_twist_pos_x * texture_scale.x,
+										uv_twist_pos_y * texture_scale.y);
 			float twist_radius = uv_twist_radius *
-					(shape1_main_texture_scale.x + shape1_main_texture_scale.y) / 2.;
+					(texture_scale.x + texture_scale.y) / 2.;
 			float percent = (twist_radius - length(twistUV)) / twist_radius;
 			float theta = percent * percent * (2.0 * sin(uv_twist_amount)) * 8.0;
 			float s = sin(theta);
 			float c = cos(theta);
 			float beta = max(sign(twist_radius - length(twistUV)), 0.);
 			twistUV = vec2(dot(twistUV, vec2(c, -s)), dot(twistUV, vec2(s, c))) * beta + twistUV * (1. - beta);
-			twistUV += vec2(uv_twist_pos_x * shape1_main_texture_scale.x,
-							uv_twist_pos_y * shape1_main_texture_scale.y);
+			twistUV += vec2(uv_twist_pos_x * texture_scale.x,
+							uv_twist_pos_y * texture_scale.y);
 			baseUV = twistUV;
 		}
 	#endif
@@ -559,8 +471,8 @@ void fragment() {
 		if (use_uv_wave)
 		{
 			vec2 texture_size = 1. / TEXTURE_PIXEL_SIZE;
-			vec2 waveUV = vec2(uv_wave_x * shape1_main_texture_scale.x,
-							uv_wave_y * shape1_main_texture_scale.y) - baseUV;
+			vec2 waveUV = vec2(uv_wave_x * texture_scale.x,
+							uv_wave_y * texture_scale.y) - baseUV;
 			waveUV.x *= texture_size.x / texture_size.y;
 			float ang_wave =
 				(sqrt(dot(waveUV, waveUV)) * uv_wave_amount)
@@ -572,9 +484,9 @@ void fragment() {
 	#if defined(UV_ROUND_WAVE)
 		if (use_uv_round_wave)
 		{
-			vec2 main_tex_size = vec2(textureSize(shape1_main_texture, 0));
-			float round_wave_x = 0.5 * shape1_main_texture_scale.x - baseUV.x;
-			float round_wave_y = (0.5 * shape1_main_texture_scale.y - baseUV.y) *
+			vec2 main_tex_size = vec2(textureSize(TEXTURE, 0));
+			float round_wave_x = 0.5 * texture_scale.x - baseUV.x;
+			float round_wave_y = (0.5 * texture_scale.y - baseUV.y) *
 				 main_tex_size.y / main_tex_size.x;
 			float ripple = -sqrt(round_wave_x * round_wave_x + round_wave_y * round_wave_y);
 			baseUV += mod(sin((ripple + TIME * (uv_round_wave_speed/10.0)) / 0.015)
@@ -582,46 +494,30 @@ void fragment() {
 		}
 	#endif
 
-	#if defined(UV_GLOBAL_DISTORTION)
-		if (use_uv_global_distortion)
-		{
-			vec2 global_distortion_uv = baseUV;
-			global_distortion_uv += mod(TIME * uv_global_distortion_speed, 1.);
-			vec2 transformed_global_distortion_uv =
-				transform_uv(global_distortion_uv,
-							uv_global_distortion_texture_scale,
-							uv_global_distortion_texture_offset);
-			float global_distortion_amount =
-				(texture(uv_global_distortion_texture, transformed_global_distortion_uv).r - 0.5)
-				* 0.2 * uv_global_distortion_amount;
-			baseUV += global_distortion_amount;
-		}
-	#endif
-
 	vec2 shape1UV;
 	shape1UV = baseUV;
-	
+
 	// calculate shape 1
 	vec4 shape1 = calculate_shape(
 		shape1UV,
 		TEXTURE,
-		shape1_main_texture_scale,
-		shape1_main_texture_offset,
-		shape1_distortion_texture,
-		shape1_distortion_texture_scale,
-		shape1_distortion_texture_offset,
-		shape1_distortion_amount,
-		shape1_distortion_speed,
-		shape1_rotation_speed,
-		shape1_rotation_offset,
-		shape1_scroll_speed,
-		shape1_red_as_alpha,
-		shape1_color,
-		shape1_contrast,
-		shape1_brightness,
-		shape1_use_polar_uv,
-		shape1_polar_uv_center,
-		shape1_distortion_polar_uvs
+		texture_scale,
+		texture_offset,
+		distortion_tex,
+		distortion_tex_scale,
+		distortion_tex_offset,
+		distortion_amount,
+		distortion_speed,
+		texture_rotation_speed,
+		texture_rotation_offset,
+		texture_scroll_speed,
+		texture_red_as_alpha,
+		texture_color,
+		contrast,
+		brightness,
+		use_polar_uv,
+		polar_uv_center,
+		distortion_uses_polar_uvs
 	);
 
 	// ---combine shapes if more than one defined.---
@@ -701,16 +597,6 @@ void fragment() {
 						* disolve_burn_color.rgb
 						* pre_disolve_alpha;
 			}
-		}
-	#endif
-
-	#if defined(COLOR_FACE_TINT)
-		if (use_color_face_tint)
-		{
-			color.rgb = mix(
-				color.rgb * backface_tint_color,
-				color.rgb * frontface_tint_color,
-				step(0, dot(world_normal, view_direction)));
 		}
 	#endif
 
