@@ -29,6 +29,7 @@ group_uniforms base;
 uniform vec2 texture_scale = vec2(1.);
 uniform vec2 texture_offset = vec2(0.);
 uniform vec2 texture_scroll_speed = vec2(0.);
+uniform bool replicate_on_scale = true;
 uniform bool apply_scale_offset_after_uv_effects;
 uniform vec4 texture_color: source_color = vec4(1.);
 uniform float texture_alpha: hint_range(0.0, 1.0) = 1.;
@@ -44,6 +45,13 @@ uniform bool use_outline;
 group_uniforms;
 #if defined(OUTLINE)
 	#include "Effects/2D/vfez_outline.gdshaderinc"
+#endif
+
+group_uniforms outline_inner;
+uniform bool use_outline_inner;
+group_uniforms;
+#if defined(OUTLINE_INNER)
+	#include "Effects/2D/vfez_outline_inner.gdshaderinc"
 #endif
 
 group_uniforms rect_size;
@@ -62,6 +70,13 @@ uniform bool use_color_ramp = false;
 group_uniforms;
 #if defined(COLOR_RAMP)
 	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
+#endif
+
+group_uniforms color_change;
+uniform bool use_color_change = false;
+group_uniforms;
+#if defined(COLOR_CHANGE)
+	#include "Effects/2D/vfez_color_change.gdshaderinc"
 #endif
 
 group_uniforms color_posterize;
@@ -122,6 +137,20 @@ group_uniforms;
 	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
 #endif
 
+group_uniforms alpha_clip;
+uniform bool use_alpha_clip = false;
+group_uniforms;
+#if defined(ALPHA_CLIP)
+	#include "Effects/2D/vfez_alpha_clip.gdshaderinc"
+#endif
+
+group_uniforms alpha_radial_clip;
+uniform bool use_alpha_radial_clip = false;
+group_uniforms;
+#if defined(ALPHA_RADIAL_CLIP)
+	#include "Effects/2D/vfez_alpha_radial_clip.gdshaderinc"
+#endif
+
 group_uniforms uv_rotation;
 uniform bool use_uv_rotation;
 #if defined(UV_ROTATION)
@@ -163,6 +192,19 @@ group_uniforms;
 	#include "Effects/Shared/vfez_uv_twist.gdshaderinc"
 #endif
 
+group_uniforms uv_fisheye;
+uniform bool use_uv_fisheye;
+group_uniforms;
+#if defined(UV_FISHEYE)
+	#include "Effects/2D/vfez_uv_fisheye.gdshaderinc"
+#endif
+
+group_uniforms uv_pinch;
+uniform bool use_uv_pinch;
+group_uniforms;
+#if defined(UV_PINCH)
+	#include "Effects/2D/vfez_uv_pinch.gdshaderinc"
+#endif
 
 group_uniforms uv_handrawn;
 uniform bool use_uv_handrawn = false;
@@ -194,6 +236,12 @@ group_uniforms;
 	#include "Effects/Shared/vfez_uv_round_wave.gdshaderinc"
 #endif
 
+group_uniforms uv_wind;
+uniform bool use_uv_wind = false;
+group_uniforms;
+#if defined(UV_WIND)
+	#include "Effects/2D/vfez_uv_wind.gdshaderinc"
+#endif
 
 group_uniforms particle.particle_anim;
 uniform bool use_particle_anim = false;
@@ -224,59 +272,7 @@ void fragment() {
 						baseUV,
 						texture_scale,
 						texture_offset,
-						true);
-
-	#if defined(UV_PIXELATE)
-		if (use_uv_pixelate)
-		{
-			vec2 texture_size = 1. / TEXTURE_PIXEL_SIZE;
-			baseUV = uv_pixelate(baseUV, texture_size);
-		}
-	#endif
-
-	#if defined(UV_TWIST)
-		if (use_uv_twist)
-		{
-			baseUV = uv_twist(baseUV, texture_scale);
-		}
-	#endif
-
-	#if defined(UV_HANDRAWN)
-		if (use_uv_handrawn)
-		{
-			baseUV = uv_handrawn(baseUV);
-		}
-	#endif
-
-	#if defined(UV_SHAKE)
-		if (use_uv_shake)
-		{
-			baseUV = uv_shake(baseUV);
-		}
-	#endif
-
-	#if defined(UV_WAVE)
-		if (use_uv_wave)
-		{
-			vec2 texture_size = 1. / TEXTURE_PIXEL_SIZE;
-			baseUV = uv_wave(baseUV, texture_size, texture_scale);
-		}
-	#endif
-
-	#if defined(UV_ROUND_WAVE)
-		if (use_uv_round_wave)
-		{
-			vec2 main_tex_size = vec2(textureSize(TEXTURE, 0));
-			baseUV = uv_round_wave(baseUV, main_tex_size, texture_scale);
-		}
-	#endif
-
-	#if defined(UV_POLAR)
-		if (use_uv_polar)
-		{
-			baseUV = uv_polar(baseUV, uv_polar_center);
-		}
-	#endif
+						replicate_on_scale);
 
 	#if defined(UV_DISTORTION)
 		if (use_uv_distortion && distortion_amount > 0.)
@@ -312,8 +308,81 @@ void fragment() {
 			texture_offset);
 	}
 	#endif
+	
+	#if defined(UV_POLAR)
+		if (use_uv_polar)
+		{
+			baseUV = uv_polar(baseUV, uv_polar_center);
+		}
+	#endif
+	
+	#if defined(UV_PIXELATE)
+		if (use_uv_pixelate)
+		{
+			vec2 texture_size = 1. / TEXTURE_PIXEL_SIZE;
+			baseUV = uv_pixelate(baseUV, texture_size);
+		}
+	#endif
 
+	#if defined(UV_TWIST)
+		if (use_uv_twist)
+		{
+			baseUV = uv_twist(baseUV, texture_scale);
+		}
+	#endif
+	
+	#if defined (UV_FISHEYE)
+		if (use_uv_fisheye)
+		{
+			baseUV = uv_fisheye(baseUV, texture_scale);
+		}
+	#endif
+	
+	#if defined(UV_PINCH)
+		if (use_uv_pinch)
+		{
+			baseUV = uv_pinch(baseUV, texture_scale);
+		}
+	#endif
+	
+	#if defined(UV_HANDRAWN)
+		if (use_uv_handrawn)
+		{
+			baseUV = uv_handrawn(baseUV);
+		}
+	#endif
 
+	#if defined(UV_SHAKE)
+		if (use_uv_shake)
+		{
+			baseUV = uv_shake(baseUV);
+		}
+	#endif
+
+	#if defined(UV_WAVE)
+		if (use_uv_wave)
+		{
+			vec2 texture_size = 1. / TEXTURE_PIXEL_SIZE;
+			baseUV = uv_wave(baseUV, texture_size, texture_scale);
+		}
+	#endif
+
+	#if defined(UV_ROUND_WAVE)
+		if (use_uv_round_wave)
+		{
+			vec2 main_tex_size = vec2(textureSize(TEXTURE, 0));
+			baseUV = uv_round_wave(baseUV, main_tex_size, texture_scale);
+		}
+	#endif
+	
+
+	#if defined(UV_WIND)
+		if (use_uv_wind)
+		{
+			baseUV = uv_wind(baseUV);
+		}
+	#endif
+	
 	if (apply_scale_offset_after_uv_effects)
 		baseUV = transform_uv(
 						baseUV,
@@ -379,6 +448,13 @@ void fragment() {
 		}
 	#endif
 
+	#if defined(OUTLINE_INNER)
+		if (use_outline_inner)
+		{
+			color = outline_inner(color, TEXTURE_PIXEL_SIZE, baseUV, TEXTURE);
+		}
+	#endif
+	
 	#if defined(ALPHA_DISOLVE)
 		if (use_alpha_disolve)
 		{
@@ -408,7 +484,14 @@ void fragment() {
 			color = color_ramp(color);
 		}
 	#endif
-
+	
+	#if defined(COLOR_CHANGE)
+		if (use_color_change)
+		{
+			color.rgb = color_change(color.rgb);
+		}
+	#endif
+	
 	#if defined(COLOR_POSTERIZE)
 		if (use_color_posterize)
 		{
@@ -436,7 +519,7 @@ void fragment() {
 			color = shadow(color, TEXTURE, baseUV);
 		}
 	#endif
-
+	
 	#if defined(ALPHA_REMAP)
 		if (use_alpha_remap)
 		{
@@ -450,7 +533,22 @@ void fragment() {
 			color.a = alpha_cutoff(color.a);
 		}
 	#endif
+	
+	#if defined(ALPHA_CLIP)
+		if (use_alpha_clip)
+		{
+			color.a = alpha_clip(color.a, baseUV, texture_scale);
+		}
+	#endif
 
+	#if defined(ALPHA_RADIAL_CLIP)
+		if (use_alpha_radial_clip)
+		{
+			color.a = alpha_radial_clip(color.a, baseUV, texture_scale);
+		}
+	#endif
+	
+	
 	color.a *= texture_alpha;
 
 	// if the following line throws an error thats a godot bug, ignore it.

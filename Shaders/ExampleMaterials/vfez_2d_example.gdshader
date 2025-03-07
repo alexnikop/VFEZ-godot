@@ -17,6 +17,7 @@ shader_type canvas_item;
 #define COLOR_FACE_TINT
 #define COLOR_GRADING
 #define COLOR_RAMP
+#define COLOR_CHANGE
 #define COLOR_POSTERIZE
 #define COLOR_RIM
 #define COLOR_GLOW
@@ -28,6 +29,7 @@ shader_type canvas_item;
 #define ALPHA_MASK
 #define ALPHA_REMAP
 #define ALPHA_CUTOFF
+#define ALPHA_CLIP
 
 #define OUTLINE
 #define UV_ROTATION
@@ -36,11 +38,14 @@ shader_type canvas_item;
 #define UV_DISTORTION
 #define UV_PIXELATE
 #define UV_TWIST
+#define UV_FISHEYE
 #define UV_HANDRAWN
 #define UV_SHAKE
 #define UV_WAVE
 #define UV_ROUND_WAVE
 #define UV_GLOBAL_DISTORTION
+#define UV_PINCH
+#define UV_WIND
 
 #define VERTEX_OFFSET
 #define VERTEX_EXPAND
