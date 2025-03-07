@@ -110,8 +110,8 @@ DiffuseMode = 0
 SpecularMode = 0
 ShadingMode = 0
 BillboardMode = 0
-NoDepthTest = 0
-BillboardKeepScale = 0
+BillboardKeepScale = false
+NoDepthTest = false
 
 [sub_resource type="QuadMesh" id="QuadMesh_eyir6"]
 
@@ -247,8 +247,8 @@ DiffuseMode = 0
 SpecularMode = 0
 ShadingMode = 0
 BillboardMode = 0
-NoDepthTest = 0
-BillboardKeepScale = 0
+BillboardKeepScale = false
+NoDepthTest = false
 
 [sub_resource type="Shader" id="Shader_4vdsh"]
 resource_name = "VFEZ3DPreview"
@@ -347,8 +347,8 @@ DiffuseMode = 0
 SpecularMode = 0
 ShadingMode = 0
 BillboardMode = 3
-NoDepthTest = 0
-BillboardKeepScale = 1
+BillboardKeepScale = true
+NoDepthTest = false
 
 [sub_resource type="Curve" id="Curve_vq4uv"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -488,8 +488,8 @@ DiffuseMode = 0
 SpecularMode = 0
 ShadingMode = 0
 BillboardMode = 0
-NoDepthTest = 0
-BillboardKeepScale = 0
+BillboardKeepScale = false
+NoDepthTest = false
 
 [sub_resource type="SphereMesh" id="SphereMesh_x6q4p"]
 radius = 0.45
@@ -613,8 +613,8 @@ DiffuseMode = 0
 SpecularMode = 0
 ShadingMode = 0
 BillboardMode = 0
-NoDepthTest = 0
-BillboardKeepScale = 0
+BillboardKeepScale = false
+NoDepthTest = false
 
 [sub_resource type="SphereMesh" id="SphereMesh_4wcxn"]
 
@@ -779,8 +779,8 @@ DiffuseMode = 0
 SpecularMode = 0
 ShadingMode = 0
 BillboardMode = 0
-NoDepthTest = 0
-BillboardKeepScale = 0
+BillboardKeepScale = false
+NoDepthTest = false
 
 [sub_resource type="QuadMesh" id="QuadMesh_6w7pd"]
 subdivide_width = 10
@@ -869,8 +869,8 @@ DiffuseMode = 0
 SpecularMode = 0
 ShadingMode = 0
 BillboardMode = 0
-NoDepthTest = 0
-BillboardKeepScale = 0
+BillboardKeepScale = false
+NoDepthTest = false
 
 [node name="VfezExamples" type="Node3D"]
 

@@ -2,50 +2,133 @@
 extends ShaderMaterial
 class_name VFEZMaterial3D
 
-# VFEZ material 3D render options properties
-# Empty options are treated as boolean properties
-var render_options: Dictionary[String, String] = \
-	{
-		"BlendMode" : "Mix,Add,Subtract,Multiply,Premultiplied_Alpha",
-		"DepthDrawMode" : "Opaque,Always,Never",
-		"CullMode" : "Back,Front,Disabled",
-		"DiffuseMode" : "Lambert,Lambert_Wrap,Burley,Toon",
-		"SpecularMode" : "Schlick_Ggx,Toon,Disabled",
-		"ShadingMode" : "Unshaded,Shaded",
-		"BillboardMode" : "Disabled,Enabled,Y,Particle",
-		"NoDepthTest" : "",
-		"BillboardKeepScale" : ""
-	}
+enum BlendModeEnum
+{
+	Mix = 0,
+	Add = 1,
+	Subtract = 2,
+	Multiply = 3,
+	Premultiplied_Alpha= 4
+}
 
-# VFEZ material 3D render option definitions to set inside the shader
-# Empty options mean nothing is set inside the shader
-var render_options_definitions: Dictionary[String, Array] =\
-	{
-		"BlendMode" : ["BLEND_MIX", "BLEND_ADD", "BLEND_SUB", "BLEND_MUL", "BLEND_PREMUL_ALPHA"],
-		"DepthDrawMode" : ["DEPTH_DRAW_OPAQUE", "DEPTH_DRAW_ALWAYS", "DEPTH_DRAW_NEVER"],
-		"CullMode" : ["CULL_BACK", "CULL_FRONT", "CULL_DISABLED"],
-		"DiffuseMode" : ["DIFFUSE_LAMBERT", "DIFFUSE_LABERT_WRAP", "DIFFUSE_BURLEY", "DIFFUSE_TOON"],
-		"SpecularMode" : ["SPECULAR_SCHLICK_GGX", "SPECULAR_TOON", "SPECULAR_DISABLED"],
-		"ShadingMode" : ["UNSHADED", ""],
-		"BillboardMode" : ["", "BILLBOARD_ENABLED", "BILLBOARD_Y", "BILLBOARD_PARTICLE"],
-		"NoDepthTest" : ["", "NO_DEPTH_TEST"],
-		"BillboardKeepScale" : ["", "BILLBOARD_KEEP_SCALE"]
-	}
+enum DepthDrawModeEnum
+{
+	Opaque = 0,
+	Always = 1,
+	Never = 2
+}
 
-# VFEZ material saved render option values
-var render_options_values: Dictionary[String, int]
-	
-# handle property gets. 
-# if is shader property get it from shader
-# if is render property get it from the material
-func _get(property):
-	if property.begins_with("shader_parameter/"):
-		return get_shader_parameter(property.replace("shader_parameter/", ""))
-	elif property in render_options.keys():
-		if property not in render_options_values.keys():
-			render_options_values[property] = 0
-		return render_options_values[property]
-	
+enum CullModeEnum
+{
+	Back = 0,
+	Front = 1,
+	Disabled = 2
+}
+
+enum DiffuseModeEnum
+{
+	Lambert = 0,
+	Lambert_Wrap = 1,
+	Burley = 2,
+	Toon = 3,
+}
+
+enum SpecularModeEnum
+{
+	Schlick_Ggx = 0,
+	Toon = 1,
+	Disabled = 2
+}
+
+enum ShadingModeEnum
+{
+	Unshaded = 0,
+	Shaded = 1
+}
+
+enum BillboardModeEnum
+{
+	Disabled = 0,
+	Enabled = 1,
+	Y = 2,
+	Particle = 3,
+}
+
+
+@export_group("Render Options")
+@export var BlendMode: BlendModeEnum:
+	get:
+		return _blendMode
+	set(value):
+		_blendMode = value
+		_update_shader_code()
+
+@export var DepthDrawMode: DepthDrawModeEnum:
+	get:
+		return _depthDrawMode
+	set(value):
+		_depthDrawMode = value
+		_update_shader_code()
+		
+@export var CullMode: CullModeEnum:
+	get:
+		return _cullMode
+	set(value):
+		_cullMode = value
+		_update_shader_code()
+
+@export var DiffuseMode: DiffuseModeEnum:
+	get:
+		return _diffuseMode
+	set(value):
+		_diffuseMode = value
+		_update_shader_code()
+
+@export var SpecularMode: SpecularModeEnum:
+	get:
+		return _specularMode
+	set(value):
+		_specularMode = value
+		_update_shader_code()
+
+@export var ShadingMode: ShadingModeEnum:
+	get:
+		return _shadingMode
+	set(value):
+		_shadingMode = value
+		_update_shader_code()
+
+@export var BillboardMode: BillboardModeEnum:
+	get: 
+		return _billboardMode
+	set(value):
+		_billboardMode = value
+		_update_shader_code()
+
+@export var BillboardKeepScale: bool:
+	get: 
+		return _billboardKeepScale
+	set(value):
+		_billboardKeepScale = value
+		_update_shader_code()
+		
+@export var NoDepthTest: bool:
+	get: 
+		return _noDepthTest
+	set(value):
+		_noDepthTest = value
+		_update_shader_code()
+		
+var _blendMode: BlendModeEnum = BlendModeEnum.Mix
+var _depthDrawMode: DepthDrawModeEnum = DepthDrawModeEnum.Opaque
+var _cullMode: CullModeEnum = CullModeEnum.Back
+var _diffuseMode: DiffuseModeEnum = DiffuseModeEnum.Lambert
+var _specularMode: SpecularModeEnum = SpecularModeEnum.Schlick_Ggx
+var _shadingMode: ShadingModeEnum = ShadingModeEnum.Unshaded
+var _billboardMode: BillboardModeEnum = BillboardModeEnum.Disabled
+var _billboardKeepScale: bool
+var _noDepthTest: bool
+
 # handle property gets. 
 # if is shader property set it in shader 
 # and if it starts with use_ update shader code to include new definitions
@@ -55,50 +138,76 @@ func _set(property, value):
 		set_shader_parameter(property.replace("shader_parameter/", ""), value)
 		if property.begins_with("shader_parameter/use_"):
 			_update_shader_code()
-	elif property in render_options.keys():
-		render_options_values[property] = int(value)
-		_update_shader_code()
 
-# create properties for all render options
-func _get_property_list() -> Array[Dictionary]:
-	var properties: Array[Dictionary] = []
+func generate_render_options_definition_string() -> String:
+	var definition_string: String = ""
 	
-	# create render options group
-	properties.append(
-		{
-			"name" : "Render Options",
-			"type" : TYPE_NIL,
-			"usage" : PROPERTY_USAGE_GROUP
-		}
-	)
+	match _blendMode:
+		BlendModeEnum.Mix:
+			definition_string += "#define BLEND_MIX\n"
+		BlendModeEnum.Add:
+			definition_string += "#define BLEND_ADD\n"
+		BlendModeEnum.Subtract:
+			definition_string += "#define BLEND_SUB\n"
+		BlendModeEnum.Multiply:
+			definition_string += "#define BLEND_MUL\n"
+		BlendModeEnum.Premultiplied_Alpha:
+			definition_string += "#define BLEND_PREMUL_ALPHA\n"
 	
-	for render_option_property in render_options.keys():
-		var render_option_enum_hint: String = render_options[render_option_property]
+	match _depthDrawMode:
+		DepthDrawModeEnum.Opaque:
+			definition_string += "#define DEPTH_DRAW_OPAQUE\n"
+		DepthDrawModeEnum.Always:
+			definition_string += "#define DEPTH_DRAW_ALWAYS\n"
+		DepthDrawModeEnum.Never:
+			definition_string += "#define DEPTH_DRAW_NEVER\n"	
+	
+	match _cullMode:
+		CullModeEnum.Back:
+			definition_string += "#define CULL_BACK\n"
+		CullModeEnum.Front:
+			definition_string += "#define CULL_FRONT\n"
+		CullModeEnum.Disabled:
+			definition_string += "#define CULL_DISABLED\n"
 
-		# if option enum hint is empty then treat it as a boolean property
-		if render_option_enum_hint == "":
-			properties.append(
-				{
-					"name": render_option_property,
-					"type": TYPE_BOOL,
-					"usage": PROPERTY_USAGE_DEFAULT,
-				}
-			)
-			
-		# if option enum hint exists, treat is as enum property
-		else:
-			properties.append(
-				{
-					"name": render_option_property,
-					"type": TYPE_INT,
-					"usage": PROPERTY_USAGE_DEFAULT,
-					"hint": PROPERTY_HINT_ENUM,
-					"hint_string": render_option_enum_hint
-				}
-			)
+	match _diffuseMode:
+		DiffuseModeEnum.Lambert:
+			definition_string += "#define DIFFUSE_LAMBERT\n"
+		DiffuseModeEnum.Lambert_Wrap:
+			definition_string += "#define DIFFUSE_LABERT_WRAP\n"
+		DiffuseModeEnum.Burley:
+			definition_string += "#define DIFFUSE_BURLEY\n"
+		DiffuseModeEnum.Toon:
+			definition_string += "#define DIFFUSE_TOON\n"
 	
-	return properties	
+	match _specularMode:
+		SpecularModeEnum.Schlick_Ggx:
+			definition_string += "#define SPECULAR_SCHLICK_GGX\n"
+		SpecularModeEnum.Toon:
+			definition_string += "#define SPECULAR_TOON\n"
+		SpecularModeEnum.Disabled:
+			definition_string += "#define SPECULAR_DISABLED\n"
+	
+	match _shadingMode:
+		ShadingModeEnum.Unshaded:
+			definition_string += "#define UNSHADED\n"
+	
+	match _billboardMode:
+		BillboardModeEnum.Enabled:
+			definition_string += "#define BILLBOARD_ENABLED\n"
+		BillboardModeEnum.Y:
+			definition_string += "#define BILLBOARD_Y\n"
+		BillboardModeEnum.Particle:
+			definition_string += "#define BILLBOARD_PARTICLE\n"
+	
+	if _noDepthTest:
+		definition_string += "#define NO_DEPTH_TEST\n"
+	
+	if _billboardKeepScale:
+		definition_string += "#define BILLBOARD_KEEP_SCALE\n"
 
+	return definition_string
+	
 # update shader code to include new option definitions
 func _update_shader_code():
 	if not Engine.is_editor_hint():
@@ -127,22 +236,7 @@ func _update_shader_code():
 	# This is necessary to be able to read the shader uniforms later.
 	shader.code = template_code + shader_include_str
 	
-	# set all render option definitions
-	for render_option_3d in render_options.keys():
-		# if render option is not initialized, initialize it to 0
-		if render_option_3d not in render_options_values.keys():
-			render_options_values[render_option_3d] = 0
-		
-		# get definition tags to write inside the shader
-		var option_value: int = render_options_values[render_option_3d]
-		var definition_tags: String = render_options_definitions[render_option_3d][option_value]
-		# if tags are empty ignore, else write them inside shader
-		if definition_tags != "":
-			# split by "," to get all valid definitions to write inside the shader
-			var definition_tag_array: PackedStringArray = definition_tags.split(",")
-			for definition_tag in definition_tag_array:
-				template_code += "#define " + definition_tag
-				template_code += "\n"
+	template_code += generate_render_options_definition_string()
 	
 	# set all shader definition options based on the relevant use_X uniform values
 	for uniform in shader.get_shader_uniform_list():

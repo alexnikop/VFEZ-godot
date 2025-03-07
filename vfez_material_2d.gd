@@ -2,36 +2,40 @@
 extends ShaderMaterial
 class_name VFEZMaterial2D
 
-# VFEZ material 2D render options properties
-# Empty options are treated as boolean properties
-var render_options: Dictionary[String, String] = \
-	{
-		"BlendMode" : "Mix,Add,Subtract,Multiply,Premultiplied_Alpha",
-		"LightMode" : "Normal,Unshaded,LightOnly",
-	}
+enum BlendModeEnum
+{
+	Mix = 0,
+	Add = 1,
+	Subtract = 2,
+	Multiply = 3,
+	Premultiplied_Alpha= 4
+}
 
-# VFEZ material 2D render option definitions to set inside the shader
-# Empty options mean nothing is set inside the shader
-var render_options_definitions: Dictionary[String, Array] =\
-	{
-		"BlendMode" : ["BLEND_MIX", "BLEND_ADD", "BLEND_SUB", "BLEND_MUL", "BLEND_PREMUL_ALPHA"],
-		"LightMode" : ["", "UNSHADED", "LIGHT_ONLY"],
-	}
+enum LightModeEnum
+{
+	Normal = 0,
+	Unshaded = 1,
+	LightOnly = 2
+}
 
-# VFEZ material saved render option values
-var render_options_values: Dictionary[String, int]
-	
-# handle property gets. 
-# if is shader property get it from shader
-# if is render property get it from the material
-func _get(property):
-	if property.begins_with("shader_parameter/"):
-		return get_shader_parameter(property.replace("shader_parameter/", ""))
-	elif property in render_options.keys():
-		if property not in render_options_values.keys():
-			render_options_values[property] = 0
-		return render_options_values[property]
-	
+@export_group("Render Options")
+@export var BlendMode: BlendModeEnum:
+	get:
+		return _blendMode
+	set(value):
+		_blendMode = value
+		_update_shader_code()
+
+@export var LightMode: LightModeEnum:
+	get:
+		return _lightMode
+	set(value):
+		_lightMode = value
+		_update_shader_code()
+		
+var _blendMode: BlendModeEnum = BlendModeEnum.Mix
+var _lightMode: LightModeEnum = LightModeEnum.Normal
+
 # handle property gets. 
 # if is shader property set it in shader 
 # and if it starts with use_ update shader code to include new definitions
@@ -41,50 +45,30 @@ func _set(property, value):
 		set_shader_parameter(property.replace("shader_parameter/", ""), value)
 		if property.begins_with("shader_parameter/use_"):
 			_update_shader_code()
-	elif property in render_options.keys():
-		render_options_values[property] = int(value)
-		_update_shader_code()
 
-# create properties for all render options
-func _get_property_list() -> Array[Dictionary]:
-	var properties: Array[Dictionary] = []
+func generate_render_options_definition_string() -> String:
+	var definition_string: String = ""
 	
-	# create render options group
-	properties.append(
-		{
-			"name" : "Render Options",
-			"type" : TYPE_NIL,
-			"usage" : PROPERTY_USAGE_GROUP
-		}
-	)
+	match _blendMode:
+		BlendModeEnum.Mix:
+			definition_string += "#define BLEND_MIX\n"
+		BlendModeEnum.Add:
+			definition_string += "#define BLEND_ADD\n"
+		BlendModeEnum.Subtract:
+			definition_string += "#define BLEND_SUB\n"
+		BlendModeEnum.Multiply:
+			definition_string += "#define BLEND_MUL\n"
+		BlendModeEnum.Premultiplied_Alpha:
+			definition_string += "#define BLEND_PREMUL_ALPHA\n"
 	
-	for render_option_property in render_options.keys():
-		var render_option_enum_hint: String = render_options[render_option_property]
-
-		# if option enum hint is empty then treat it as a boolean property
-		if render_option_enum_hint == "":
-			properties.append(
-				{
-					"name": render_option_property,
-					"type": TYPE_BOOL,
-					"usage": PROPERTY_USAGE_DEFAULT,
-				}
-			)
+	match _lightMode:
+		LightModeEnum.Unshaded:
+			definition_string  += "#define UNSHADED\n"
+		LightModeEnum.LightOnly:
+			definition_string  += "#define LIGHT_ONLY\n"
 			
-		# if option enum hint exists, treat is as enum property
-		else:
-			properties.append(
-				{
-					"name": render_option_property,
-					"type": TYPE_INT,
-					"usage": PROPERTY_USAGE_DEFAULT,
-					"hint": PROPERTY_HINT_ENUM,
-					"hint_string": render_option_enum_hint
-				}
-			)
+	return definition_string
 	
-	return properties	
-
 # update shader code to include new option definitions
 func _update_shader_code():
 	if not Engine.is_editor_hint():
@@ -112,24 +96,9 @@ func _update_shader_code():
 	# initialize the shader code with the included shader template. 
 	# This is necessary to be able to read the shader uniforms later.
 	shader.code = template_code + shader_include_str
-	
-	# set all render option definitions
-	for render_option_3d in render_options.keys():
-		# if render option is not initialized, initialize it to 0
-		if render_option_3d not in render_options_values.keys():
-			render_options_values[render_option_3d] = 0
-		
-		# get definition tags to write inside the shader
-		var option_value: int = render_options_values[render_option_3d]
-		var definition_tags: String = render_options_definitions[render_option_3d][option_value]
-		# if tags are empty ignore, else write them inside shader
-		if definition_tags != "":
-			# split by "," to get all valid definitions to write inside the shader
-			var definition_tag_array: PackedStringArray = definition_tags.split(",")
-			for definition_tag in definition_tag_array:
-				template_code += "#define " + definition_tag
-				template_code += "\n"
-	
+
+	template_code += generate_render_options_definition_string()
+
 	# set all shader definition options based on the relevant use_X uniform values
 	for uniform in shader.get_shader_uniform_list():
 		var uniform_name: String = uniform["name"]
