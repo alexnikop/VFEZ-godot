@@ -1,4 +1,9 @@
-vec2 uv_handrawn(vec2 uv, float uv_handrawn_amount, float uv_handrawn_speed)
+group_uniforms uv_handrawn;
+uniform float uv_handrawn_amount: hint_range(0.0, 40.0) = 10.;
+uniform float uv_handrawn_speed: hint_range(0.0, 30.0) = 5.;
+group_uniforms;
+
+vec2 uv_handrawn(vec2 uv)
 {
 	vec2 handrawnUV = uv;
 	float handrawn_speed =

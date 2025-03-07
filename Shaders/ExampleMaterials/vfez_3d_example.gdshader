@@ -69,4 +69,6 @@ shader_type spatial;
 #define VERTEX_OFFSET
 #define VERTEX_EXPAND
 
+#define PARTICLE_ANIM
+
 #include "../vfez_3d_template.gdshaderinc"

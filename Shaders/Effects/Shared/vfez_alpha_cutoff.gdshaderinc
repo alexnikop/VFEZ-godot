@@ -1,4 +1,6 @@
+group_uniforms alpha_cutoff;
 uniform float alpha_cuttof_value: hint_range(0.001, 1.) = 0.5;
+group_uniforms;
 
 float alpha_cutoff(float alpha)
 {

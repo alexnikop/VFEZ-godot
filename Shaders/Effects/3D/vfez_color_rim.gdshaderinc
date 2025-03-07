@@ -1,14 +1,17 @@
+group_uniforms color_rim;
+uniform vec4 rim_color: source_color = vec4(1.);
+uniform float rim_bias: hint_range(0.0, 1.0) = 0.;
+uniform float rim_scale: hint_range(0.0, 25.0) = 1.;
+uniform float rim_power: hint_range(0.1, 20.0) = 5.;
+uniform float rim_intensity: hint_range(0.1, 50.0) = 1.;
+uniform float rim_add_amount: hint_range(0.1, 1.0) = 1.;
+uniform float rim_erodes_alpha: hint_range(0.1, 2.0) = 0.;
+group_uniforms;
+
 vec4 color_rim(
 	vec4 color, 
 	vec3 normal, 
-	vec3 view, 
-	vec4 rim_color,
-	float rim_bias,
-	float rim_scale,
-	float rim_power,
-	float rim_intensity,
-	float rim_add_amount,
-	float rim_erodes_alpha)
+	vec3 view)
 {
 	float ndv = 1. - abs(dot(normal, view));
    	float rim_factor = clamp(

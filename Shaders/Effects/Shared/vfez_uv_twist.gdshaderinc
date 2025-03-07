@@ -1,10 +1,13 @@
+group_uniforms uv_twist;
+uniform float uv_twist_amount: hint_range(0.0, 3.1415) = 1.;
+uniform float uv_twist_pos_x: hint_range(0.0, 1.0) = 0.5;
+uniform float uv_twist_pos_y: hint_range(0.0, 1.0) = 0.5;
+uniform float uv_twist_radius: hint_range(0.0, 3.0) = 0.75;
+group_uniforms;
+
 vec2 uv_twist(
 	vec2 uv, 
-	vec2 main_texture_scale,
-	float uv_twist_amount, 
-	float uv_twist_pos_x, 
-	float uv_twist_pos_y,
-	float uv_twist_radius)
+	vec2 main_texture_scale)
 {
 	vec2 twistUV = uv - vec2(uv_twist_pos_x * main_texture_scale.x,
 								uv_twist_pos_y * main_texture_scale.y);

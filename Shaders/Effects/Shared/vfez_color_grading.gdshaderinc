@@ -3,12 +3,14 @@
 	#define VFEZ_UTILS
 #endif
 
-vec3 color_grading(
-	vec4 color,
-	vec3 color_grading_light_tone, 
-	vec3 color_grading_mid_tone,
-	vec3 color_grading_dark_tone,
-	float color_grading_mid_point)
+group_uniforms color_grading;
+uniform vec3 color_grading_light_tone: source_color;
+uniform vec3 color_grading_mid_tone: source_color;
+uniform vec3 color_grading_dark_tone: source_color;
+uniform float color_grading_mid_point: hint_range(0.0, 1.0) = 0.5;
+group_uniforms;
+
+vec3 color_grading(vec4 color)
 {
 	float luminance = get_color_luminance(color);
 	

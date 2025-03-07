@@ -10,8 +10,6 @@
 	#define VFEZ_UTILS
 #endif
 
-#include "Effects/Shared/vfez_uv_distortion.gdshaderinc"
-
 #if defined(UNSHADED)
 	render_mode unshaded;
 #endif
@@ -210,189 +208,123 @@ group_uniforms;
 
 group_uniforms color_face_tint;
 	uniform bool use_color_face_tint = false;
+group_uniforms;
 #if defined(COLOR_FACE_TINT)
 	#include "Effects/3D/vfez_color_face_tint.gdshaderinc"
-	uniform vec3 backface_tint_color: source_color = vec3(0.5);
-	uniform vec3 frontface_tint_color: source_color = vec3(1.);
 #endif
-group_uniforms;
 
 group_uniforms color_grading;
 uniform bool use_color_grading = false;
+group_uniforms;
 #if defined(COLOR_GRADING)
 	#include "Effects/Shared/vfez_color_grading.gdshaderinc"
-	uniform vec3 color_grading_light_tone: source_color;
-	uniform vec3 color_grading_mid_tone: source_color;
-	uniform vec3 color_grading_dark_tone: source_color;
-	uniform float color_grading_mid_point: hint_range(0.0, 1.0) = 0.5;
 #endif
-group_uniforms;
+
 
 group_uniforms color_ramp;
 uniform bool use_color_ramp = false;
+group_uniforms;
 #if defined(COLOR_RAMP)
 	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
-	uniform vec4 color_ramp_albedo: source_color = vec4(1.);
-	uniform sampler2D color_ramp_texture: source_color, repeat_disable;
-	uniform float color_ramp_luminosity: hint_range(-1., 1.) = 0.;
-	uniform float color_ramp_blend: hint_range(0.0, 1.0) = 1.;
 #endif
-group_uniforms;
 
 group_uniforms color_posterize;
 uniform bool use_color_posterize = false;
+group_uniforms;
 #if defined(COLOR_POSTERIZE)
 	#include "Effects/Shared/vfez_color_posterize.gdshaderinc"
-	uniform float color_posterize_num_colors: hint_range(0.0, 30.) = 5.;
 #endif
-group_uniforms;
 
 group_uniforms color_rim;
 uniform bool use_color_rim = false;
+group_uniforms;
 #if defined(COLOR_RIM)
 	#include "Effects/3D/vfez_color_rim.gdshaderinc"
-	uniform vec4 rim_color: source_color = vec4(1.);
-	uniform float rim_bias: hint_range(0.0, 1.0) = 0.;
-	uniform float rim_scale: hint_range(0.0, 25.0) = 1.;
-	uniform float rim_power: hint_range(0.1, 20.0) = 5.;
-	uniform float rim_intensity: hint_range(0.1, 50.0) = 1.;
-	uniform float rim_add_amount: hint_range(0.1, 1.0) = 1.;
-	uniform float rim_erodes_alpha: hint_range(0.1, 2.0) = 0.;
 #endif
-group_uniforms;
 
 group_uniforms color_glow;
 uniform bool use_color_glow = false;
+group_uniforms;
 #if defined(COLOR_GLOW)
 	#include "Effects/Shared/vfez_color_glow.gdshaderinc"
-	uniform vec4 glow_color: source_color = vec4(1.);
-	uniform float glow_intensity = 0;
-	uniform float glow_intensity_global = 1;
-	uniform bool use_glow_texture = false;
-	uniform sampler2D glow_texture: source_color;
 #endif
-group_uniforms;
 
 group_uniforms color_hsv_shift;
 uniform bool use_color_hsv_shift = false;
+group_uniforms;
 #if defined(COLOR_HSV_SHIFT)
 	#include "Effects/Shared/vfez_hsv_shift.gdshaderinc"
-	uniform float h_shift: hint_range(0.0, 360.0) = 180;
-	uniform float s_shift:  hint_range(0.0, 2.) = 1.;
-	uniform float v_shift: hint_range(0.0, 2.) = 1.;
 #endif
-group_uniforms;
 
 group_uniforms alpha_disolve;
 uniform bool use_alpha_disolve = false;
+group_uniforms;
 #if defined(ALPHA_DISOLVE)
 	#include "Effects/Shared/vfez_alpha_disolve.gdshaderinc"
-	uniform sampler2D alpha_disolve_texture: source_color;
-	uniform vec2 alpha_disolve_texture_scale = vec2(1.);
-	uniform vec2 alpha_disolve_texture_offset = vec2(0.);
- 	uniform float alpha_disolve_amount: hint_range(-0.1, 1) = -0.1;
-	uniform float alpha_disolve_transition: hint_range(0.01, 0.75)= 0.075;
-	uniform float alpha_disolve_power: hint_range(0.001, 10) = 1;
-	uniform vec2 alpha_disolve_scroll_speed;
-	group_uniforms;
-
-	group_uniforms alpha_disolve.disolve_burn;
-	uniform bool use_alpha_disolve_burn = false;
-	uniform sampler2D alpha_disolve_burn_texture: source_color;
-	uniform vec3 alpha_disolve_burn_color: source_color = vec3(1., 1., 0.);
-	uniform float alpha_disolve_burn_width: hint_range(0.0, 0.2) = 0.01;
-	uniform float alpha_disolve_burn_glow: hint_range(1, 250) = 5;
-	group_uniforms;
-#else
-group_uniforms;
 #endif
-
 
 group_uniforms alpha_mask;
 uniform bool use_alpha_mask = false;
+group_uniforms;
 #if defined(ALPHA_MASK)
 	#include "Effects/Shared/vfez_alpha_mask.gdshaderinc"
-	uniform sampler2D alpha_mask_texture: source_color;
-	uniform vec2 alpha_mask_scale = vec2(1.);
-	uniform vec2 alpha_mask_offset = vec2(0.);
-	uniform float alpha_mask_power: hint_range(0.001, 10.) = 1;
 #endif
-group_uniforms;
 
 group_uniforms alpha_remap;
 uniform bool use_alpha_remap = false;
+group_uniforms;
 #if defined(ALPHA_REMAP)
 	#include "Effects/Shared/vfez_alpha_remap.gdshaderinc"
-	uniform float alpha_remap_min: hint_range(0.0, 1.0) = 0;
-	uniform float alpha_remap_max: hint_range(0.0, 1.0) = 0.075;
 #endif
-group_uniforms alpha_remap;
 
 group_uniforms alpha_cutoff;
 uniform bool use_alpha_cutoff = false;
+group_uniforms;
 #if defined(ALPHA_CUTOFF)
 	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
 #endif
-group_uniforms;
 
 group_uniforms uv_pixelate;
 uniform bool use_uv_pixelate = false;
+group_uniforms;
 #if defined(UV_PIXELATE)
 	#include "Effects/Shared/vfez_uv_pixelate.gdshaderinc"
-	uniform int uv_pixelate_size: hint_range(4, 512) = 32;
 #endif
-group_uniforms;
 
 group_uniforms uv_twist;
 uniform bool use_uv_twist = false;
+group_uniforms;
 #if defined(UV_TWIST)
 	#include "Effects/Shared/vfez_uv_twist.gdshaderinc"
-	uniform float uv_twist_amount: hint_range(0.0, 3.1415) = 1.;
-	uniform float uv_twist_pos_x: hint_range(0.0, 1.0) = 0.5;
-	uniform float uv_twist_pos_y: hint_range(0.0, 1.0) = 0.5;
-	uniform float uv_twist_radius: hint_range(0.0, 3.0) = 0.75;
 #endif
-group_uniforms;
 
 group_uniforms uv_handrawn;
 uniform bool use_uv_handrawn = false;
+group_uniforms;
 #if defined(UV_HANDRAWN)
 	#include "Effects/Shared/vfez_uv_handrawn.gdshaderinc"
-	uniform float uv_handrawn_amount: hint_range(0.0, 40.0) = 10.;
-	uniform float uv_handrawn_speed: hint_range(0.0, 30.0) = 5.;
 #endif
-group_uniforms;
 
 group_uniforms uv_shake;
 uniform bool use_uv_shake = false;
+group_uniforms;
 #if defined(UV_SHAKE)
 	#include "Effects/Shared/vfez_uv_shake.gdshaderinc"
-	uniform float uv_shake_speed: hint_range(0.0, 50.0) = 20.;
-	uniform float uv_shake_x: hint_range(-15., 15) = 5;
-	uniform float uv_shake_y: hint_range(-15., 15) = 4;
 #endif
-group_uniforms;
 
 group_uniforms uv_wave;
 uniform bool use_uv_wave = false;
+group_uniforms;
 #if defined(UV_WAVE)
 	#include "Effects/Shared/vfez_uv_wave.gdshaderinc"
-	uniform float uv_wave_amount: hint_range(0.0, 25.0) = 7.;
-	uniform float uv_wave_speed: hint_range(0.0, 25.0) = 10.;
-	uniform float uv_wave_strength: hint_range(0.0, 25.0) = 7.5;
-	uniform float uv_wave_x: hint_range(0.0, 1.0) = 0.;
-	uniform float uv_wave_y: hint_range(0.0, 1.0) = 0.5;
 #endif
-group_uniforms;
 
 group_uniforms uv_round_wave;
 uniform bool use_uv_round_wave = false;
+group_uniforms;
 #if defined(UV_ROUND_WAVE)
 	#include "Effects/Shared/vfez_uv_round_wave.gdshaderinc"
-	uniform float uv_round_wave_strength: hint_range(0.0, 1.0) = 0.7;
-	uniform float uv_round_wave_speed: hint_range(0.0, 5.0) = 2.;
 #endif
-group_uniforms;
 
 group_uniforms uv_global_distortion;
 uniform bool use_uv_global_distortion = false;
@@ -407,24 +339,19 @@ group_uniforms;
 
 group_uniforms vertex_offset;
 uniform bool use_vertex_offset = false;
+group_uniforms;
 #if defined(VERTEX_OFFSET)
 	#include "Effects/3D/vfez_vertex_offset.gdshaderinc"
-	uniform sampler2D vertex_offset_texture: source_color;
-	uniform float vertex_offset_amount: hint_range(0.0, 2.) = 0.5;
-	uniform float vertex_offset_power: hint_range(0.01, 10.) = 1.;
-	uniform vec2 vertex_offset_speed;
 #endif
-group_uniforms;
+
 
 group_uniforms vertex_expand;
 uniform bool use_vertex_expand;
+group_uniforms;
 #if defined(VERTEX_EXPAND)
 	#include "Effects/3D/vfez_vertex_expand.gdshaderinc"
-	uniform vec3 vertex_expand_center = vec3(0.);
-	uniform bool vertex_expand_ignore_center_vertical = false;
-	uniform float vertex_expand_amount: hint_range(0.0, 10.) = 0.5;
 #endif
-group_uniforms;
+
 
 group_uniforms particle;
 uniform bool use_particle_trails = false;
@@ -432,11 +359,7 @@ uniform bool use_particle_anim = false;
 group_uniforms;
 
 #if defined(PARTICLE_ANIM)
-	group_uniforms particle.particle_anim;
-	uniform int particles_anim_h_frames : hint_range(1, 128) = 1;
-	uniform int particles_anim_v_frames : hint_range(1, 128) = 1;
-	uniform bool particles_anim_loop;
-	group_uniforms;
+	#include "Effects/Shared/vfez_particle_anim.gdshaderinc"
 #endif
 
 
@@ -611,32 +534,21 @@ void vertex() {
 	#if defined(VERTEX_OFFSET)
 		if (use_vertex_offset)
 		{
-			VERTEX = vertex_offset(VERTEX, NORMAL, UV, vertex_offset_texture,
-					vertex_offset_amount, vertex_offset_power, vertex_offset_speed);
+			VERTEX = vertex_offset(VERTEX, NORMAL, UV);
 		}
 	#endif
 
 	#if defined(VERTEX_EXPAND)
 		if (use_vertex_expand)
 		{
-			VERTEX = vertex_expand(VERTEX, vertex_expand_center, vertex_expand_ignore_center_vertical, vertex_expand_amount);
+			VERTEX = vertex_expand(VERTEX);
 		}
 	#endif
 
 	#if defined(PARTICLE_ANIM)
 		if (use_particle_anim)
 		{
-			float h_frames = float(particles_anim_h_frames);
-			float v_frames = float(particles_anim_v_frames);
-			float particle_total_frames = float(particles_anim_h_frames * particles_anim_v_frames);
-			float particle_frame = floor(INSTANCE_CUSTOM.z * float(particle_total_frames));
-			if (!particles_anim_loop) {
-				particle_frame = clamp(particle_frame, 0.0, particle_total_frames - 1.0);
-			} else {
-				particle_frame = mod(particle_frame, particle_total_frames);
-			}
-			UV /= vec2(h_frames, v_frames);
-			UV += vec2(mod(particle_frame, h_frames) / h_frames, floor((particle_frame + 0.5) / h_frames) / v_frames);
+			UV = particle_anim(INSTANCE_CUSTOM.z, UV);
 		}
 	#endif
 
@@ -662,37 +574,35 @@ void fragment() {
 	#if defined(UV_PIXELATE)
 		if (use_uv_pixelate)
 		{
-			baseUV = uv_pixelate(baseUV, VIEWPORT_SIZE, uv_pixelate_size);
+			baseUV = uv_pixelate(baseUV, VIEWPORT_SIZE);
 		}
 	#endif
 
 	#if defined(UV_TWIST)
 		if (use_uv_twist)
 		{
-			baseUV = uv_twist(baseUV, shape1_main_texture_scale, uv_twist_amount,
-							uv_twist_pos_x, uv_twist_pos_y, uv_twist_radius);
+			baseUV = uv_twist(baseUV, shape1_main_texture_scale);
 		}
 	#endif
 
 	#if defined(UV_HANDRAWN)
 		if (use_uv_handrawn)
 		{
-			baseUV = uv_handrawn(baseUV, uv_handrawn_amount, uv_handrawn_speed);
+			baseUV = uv_handrawn(baseUV);
 		}
 	#endif
 
 	#if defined(UV_SHAKE)
 		if (use_uv_shake)
 		{
-			baseUV = uv_shake(baseUV, uv_shake_speed, uv_shake_x, uv_shake_y);
+			baseUV = uv_shake(baseUV);
 		}
 	#endif
 
 	#if defined(UV_WAVE)
 		if (use_uv_wave)
 		{
-			baseUV = uv_wave(baseUV, VIEWPORT_SIZE, shape1_main_texture_scale, uv_wave_amount,
-								uv_wave_speed, uv_wave_strength, uv_wave_x, uv_wave_y);
+			baseUV = uv_wave(baseUV, VIEWPORT_SIZE, shape1_main_texture_scale);
 		}
 	#endif
 
@@ -700,8 +610,7 @@ void fragment() {
 		if (use_uv_round_wave)
 		{
 			vec2 main_tex_size = vec2(textureSize(shape1_main_texture, 0));
-			baseUV = uv_round_wave(baseUV, main_tex_size, shape1_main_texture_scale,
-					uv_round_wave_strength, uv_round_wave_speed);
+			baseUV = uv_round_wave(baseUV, main_tex_size, shape1_main_texture_scale);
 		}
 	#endif
 
@@ -884,16 +793,10 @@ void fragment() {
 	color.a = clamp(color.a, 0., 1.);
 
 	// ----------------------------------------------
-
-	// lumincance is used in other effects
-	//float luminance = 0.;
-
 	// apply premultiply color
 	if (premultiply_color)
 	{
 		float luminance = get_color_luminance(color);
-		//luminance = 0.3 * color.r + 0.59 * color.g + 0.11 * color.b;
-		//luminance *= color.a;
 		color.a = min(luminance, color.a);
 	}
 
@@ -915,20 +818,14 @@ void fragment() {
 				pre_disolve_alpha *= luminance;
 			}
 
-			vec2 disolve_uv = transform_uv(baseUV, alpha_disolve_texture_scale, alpha_disolve_texture_offset, false);
-
-			color = alpha_disolve(color, pre_disolve_alpha, COLOR.a, alpha_disolve_texture, disolve_uv,
-						alpha_disolve_amount, alpha_disolve_transition, alpha_disolve_power,
-						alpha_disolve_scroll_speed, use_alpha_disolve_burn, alpha_disolve_burn_texture, alpha_disolve_burn_color,
-						alpha_disolve_burn_width, alpha_disolve_burn_glow);
+			color = alpha_disolve(color, pre_disolve_alpha, COLOR.a, baseUV, false);
 		}
 	#endif
 
 	#if defined(COLOR_FACE_TINT)
 		if (use_color_face_tint)
 		{
-			color.rgb = color_face_tint(color.rgb, backface_tint_color,
-					frontface_tint_color, world_normal, view_direction);
+			color.rgb = color_face_tint(color.rgb, world_normal, view_direction);
 		}
 	#endif
 
@@ -936,8 +833,7 @@ void fragment() {
 	#if defined(COLOR_GRADING)
 		if (use_color_grading)
 		{
-			color.rgb = color_grading(color, color_grading_light_tone,
-				color_grading_mid_tone, color_grading_dark_tone, color_grading_mid_point);
+			color.rgb = color_grading(color);
 		}
 	#endif
 
@@ -945,24 +841,21 @@ void fragment() {
 	#if defined(COLOR_RAMP)
 		if (use_color_ramp)
 		{
-			color = color_ramp(color, color_ramp_albedo,
-					color_ramp_texture, color_ramp_luminosity, color_ramp_blend);
+			color = color_ramp(color);
 		}
 	#endif
 
 	#if defined(COLOR_POSTERIZE)
 		if (use_color_posterize)
 		{
-			color.rgb = color_posterize(color.rgb, color_posterize_num_colors);
+			color.rgb = color_posterize(color.rgb);
 		}
 	#endif
 
 	#if defined(COLOR_RIM)
 		if (use_color_rim)
 		{
-			color = color_rim(color, NORMAL, VIEW, rim_color,
-					rim_bias, rim_scale, rim_power, rim_intensity,
-					rim_add_amount, rim_erodes_alpha);
+			color = color_rim(color, NORMAL, VIEW);
 		}
 	#endif
 
@@ -976,30 +869,28 @@ void fragment() {
 				glow_mult = luminance;
 			}
 
-			color.rgb = color_glow(color, glow_texture, use_glow_texture,
-					baseUV, glow_color.rgb, glow_mult, glow_intensity, glow_intensity_global);
+			color.rgb = color_glow(color, baseUV, glow_mult);
 		}
 	#endif
 
 	#if defined(COLOR_HSV_SHIFT)
 		if (use_color_hsv_shift)
 		{
-			color.rgb = hsv_shift(color.rgb, h_shift, s_shift, v_shift);
+			color.rgb = hsv_shift(color.rgb);
 		}
 	#endif
 
 	#if defined(ALPHA_MASK)
 		if (use_alpha_mask)
 		{
-			vec2 alpha_mask_uv = transform_uv(clampedUV, alpha_mask_scale, alpha_mask_offset, false);
-			color.a = alpha_mask(color.a, alpha_mask_texture, alpha_mask_uv, alpha_mask_power);
+			color.a = alpha_mask(color.a, clampedUV, false);
 		}
 	#endif
 
 	#if defined(ALPHA_REMAP)
 		if (use_alpha_remap)
 		{
-			color.a = alpha_remap(color.a, alpha_remap_min, alpha_remap_max);
+			color.a = alpha_remap(color.a);
 		}
 	#endif
 

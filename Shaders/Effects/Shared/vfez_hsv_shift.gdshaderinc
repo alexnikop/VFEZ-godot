@@ -1,4 +1,10 @@
-vec3 hsv_shift(vec3 color, float h_shift, float s_shift, float v_shift)
+group_uniforms color_hsv_shift;
+uniform float h_shift: hint_range(0.0, 360.0) = 180;
+uniform float s_shift:  hint_range(0.0, 2.) = 1.;
+uniform float v_shift: hint_range(0.0, 2.) = 1.;
+group_uniforms;
+
+vec3 hsv_shift(vec3 color)
 {
 	vec3 result_hsv = vec3(color.rgb);
 	float cos_hsv = v_shift * s_shift * cos(h_shift * PI / 180.);

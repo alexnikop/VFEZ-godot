@@ -3,22 +3,34 @@
 	#define VFEZ_UTILS
 #endif
 
+group_uniforms alpha_disolve;
+uniform sampler2D alpha_disolve_texture: source_color;
+uniform vec2 alpha_disolve_texture_scale = vec2(1.);
+uniform vec2 alpha_disolve_texture_offset = vec2(0.);
+uniform float alpha_disolve_amount: hint_range(-0.1, 1) = -0.1;
+uniform float alpha_disolve_transition: hint_range(0.01, 0.75)= 0.075;
+uniform float alpha_disolve_power: hint_range(0.001, 10) = 1;
+uniform vec2 alpha_disolve_scroll_speed;
+group_uniforms;
+
+// disolve burn
+group_uniforms alpha_disolve.disolve_burn;
+uniform bool use_alpha_disolve_burn = false;
+uniform sampler2D alpha_disolve_burn_texture: source_color;
+uniform vec3 alpha_disolve_burn_color: source_color = vec3(1., 1., 0.);
+uniform float alpha_disolve_burn_width: hint_range(0.0, 0.2) = 0.01;
+uniform float alpha_disolve_burn_glow: hint_range(1, 250) = 5;
+group_uniforms;
+
 vec4 alpha_disolve(
 	vec4 color,
 	float pre_disolve_alpha,
 	float base_a,
-	sampler2D alpha_disolve_texture,
-	vec2 disolve_uv,
-	float alpha_disolve_amount,
-	float alpha_disolve_transition,
-	float alpha_disolve_power,
-	vec2 alpha_disolve_scroll_speed,
-	bool use_alpha_disolve_burn,
-	sampler2D alpha_disolve_burn_texture,
-	vec3 alpha_disolve_burn_color,
-	float alpha_disolve_burn_width,
-	float alpha_disolve_burn_glow)
+	vec2 uv,
+	bool fract_uv)
 {
+	vec2 disolve_uv = transform_uv(uv, alpha_disolve_texture_scale, alpha_disolve_texture_offset, fract_uv);
+
 	float disolve_amount = clamp(alpha_disolve_amount + (1. - base_a), 0., 1.);
 	float disolve_transition = max(0.01, alpha_disolve_transition * ease_out_quint(disolve_amount));
 	disolve_uv += mod(TIME * alpha_disolve_scroll_speed, 1.0);

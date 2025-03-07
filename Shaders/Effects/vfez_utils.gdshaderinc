@@ -7,6 +7,26 @@ vec2 transform_uv(vec2 uv, vec2 scale, vec2 offset, bool fract_result)
 	return uv;
 }
 
+vec2 uv_distortion(
+	vec2 uv,
+	sampler2D distortion_texture,
+	vec2 distortion_uv,
+	float distortion_amount,
+	vec2 distortion_speed,
+	bool fract_result)
+{
+	distortion_uv += mod(TIME * distortion_speed, vec2(1.));
+	if (fract_result)
+	{
+		distortion_uv = fract(distortion_uv);
+	}
+
+	float distortAmount =
+		(texture(distortion_texture, distortion_uv).r - 0.5) * 0.2 * distortion_amount;
+	uv += vec2(1.) * distortAmount;
+	return uv;
+}
+
 vec2 uv_polar(vec2 uv, vec2 center)
 {
 	vec2 dir = uv - center;
