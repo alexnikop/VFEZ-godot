@@ -5,6 +5,13 @@
 
 // shader code starts here -----------------------------------------------
 
+#ifndef VFEZ_UTILS
+	#include "Effects/vfez_utils.gdshaderinc"
+	#define VFEZ_UTILS
+#endif
+
+#include "Effects/Shared/vfez_uv_distortion.gdshaderinc"
+
 #if defined(UNSHADED)
 	render_mode unshaded;
 #endif
@@ -204,6 +211,7 @@ group_uniforms;
 group_uniforms color_face_tint;
 	uniform bool use_color_face_tint = false;
 #if defined(COLOR_FACE_TINT)
+	#include "Effects/3D/vfez_color_face_tint.gdshaderinc"
 	uniform vec3 backface_tint_color: source_color = vec3(0.5);
 	uniform vec3 frontface_tint_color: source_color = vec3(1.);
 #endif
@@ -212,6 +220,7 @@ group_uniforms;
 group_uniforms color_grading;
 uniform bool use_color_grading = false;
 #if defined(COLOR_GRADING)
+	#include "Effects/Shared/vfez_color_grading.gdshaderinc"
 	uniform vec3 color_grading_light_tone: source_color;
 	uniform vec3 color_grading_mid_tone: source_color;
 	uniform vec3 color_grading_dark_tone: source_color;
@@ -222,6 +231,7 @@ group_uniforms;
 group_uniforms color_ramp;
 uniform bool use_color_ramp = false;
 #if defined(COLOR_RAMP)
+	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
 	uniform vec4 color_ramp_albedo: source_color = vec4(1.);
 	uniform sampler2D color_ramp_texture: source_color, repeat_disable;
 	uniform float color_ramp_luminosity: hint_range(-1., 1.) = 0.;
@@ -232,6 +242,7 @@ group_uniforms;
 group_uniforms color_posterize;
 uniform bool use_color_posterize = false;
 #if defined(COLOR_POSTERIZE)
+	#include "Effects/Shared/vfez_color_posterize.gdshaderinc"
 	uniform float color_posterize_num_colors: hint_range(0.0, 30.) = 5.;
 #endif
 group_uniforms;
@@ -239,6 +250,7 @@ group_uniforms;
 group_uniforms color_rim;
 uniform bool use_color_rim = false;
 #if defined(COLOR_RIM)
+	#include "Effects/3D/vfez_color_rim.gdshaderinc"
 	uniform vec4 rim_color: source_color = vec4(1.);
 	uniform float rim_bias: hint_range(0.0, 1.0) = 0.;
 	uniform float rim_scale: hint_range(0.0, 25.0) = 1.;
@@ -252,6 +264,7 @@ group_uniforms;
 group_uniforms color_glow;
 uniform bool use_color_glow = false;
 #if defined(COLOR_GLOW)
+	#include "Effects/Shared/vfez_color_glow.gdshaderinc"
 	uniform vec4 glow_color: source_color = vec4(1.);
 	uniform float glow_intensity = 0;
 	uniform float glow_intensity_global = 1;
@@ -263,6 +276,7 @@ group_uniforms;
 group_uniforms color_hsv_shift;
 uniform bool use_color_hsv_shift = false;
 #if defined(COLOR_HSV_SHIFT)
+	#include "Effects/Shared/vfez_hsv_shift.gdshaderinc"
 	uniform float h_shift: hint_range(0.0, 360.0) = 180;
 	uniform float s_shift:  hint_range(0.0, 2.) = 1.;
 	uniform float v_shift: hint_range(0.0, 2.) = 1.;
@@ -272,6 +286,7 @@ group_uniforms;
 group_uniforms alpha_disolve;
 uniform bool use_alpha_disolve = false;
 #if defined(ALPHA_DISOLVE)
+	#include "Effects/Shared/vfez_alpha_disolve.gdshaderinc"
 	uniform sampler2D alpha_disolve_texture: source_color;
 	uniform vec2 alpha_disolve_texture_scale = vec2(1.);
 	uniform vec2 alpha_disolve_texture_offset = vec2(0.);
@@ -296,6 +311,7 @@ group_uniforms;
 group_uniforms alpha_mask;
 uniform bool use_alpha_mask = false;
 #if defined(ALPHA_MASK)
+	#include "Effects/Shared/vfez_alpha_mask.gdshaderinc"
 	uniform sampler2D alpha_mask_texture: source_color;
 	uniform vec2 alpha_mask_scale = vec2(1.);
 	uniform vec2 alpha_mask_offset = vec2(0.);
@@ -306,6 +322,7 @@ group_uniforms;
 group_uniforms alpha_remap;
 uniform bool use_alpha_remap = false;
 #if defined(ALPHA_REMAP)
+	#include "Effects/Shared/vfez_alpha_remap.gdshaderinc"
 	uniform float alpha_remap_min: hint_range(0.0, 1.0) = 0;
 	uniform float alpha_remap_max: hint_range(0.0, 1.0) = 0.075;
 #endif
@@ -314,13 +331,14 @@ group_uniforms alpha_remap;
 group_uniforms alpha_cutoff;
 uniform bool use_alpha_cutoff = false;
 #if defined(ALPHA_CUTOFF)
-	uniform float alpha_cuttof_value: hint_range(0.001, 1.) = 0.5;
+	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
 #endif
 group_uniforms;
 
 group_uniforms uv_pixelate;
 uniform bool use_uv_pixelate = false;
 #if defined(UV_PIXELATE)
+	#include "Effects/Shared/vfez_uv_pixelate.gdshaderinc"
 	uniform int uv_pixelate_size: hint_range(4, 512) = 32;
 #endif
 group_uniforms;
@@ -328,6 +346,7 @@ group_uniforms;
 group_uniforms uv_twist;
 uniform bool use_uv_twist = false;
 #if defined(UV_TWIST)
+	#include "Effects/Shared/vfez_uv_twist.gdshaderinc"
 	uniform float uv_twist_amount: hint_range(0.0, 3.1415) = 1.;
 	uniform float uv_twist_pos_x: hint_range(0.0, 1.0) = 0.5;
 	uniform float uv_twist_pos_y: hint_range(0.0, 1.0) = 0.5;
@@ -338,6 +357,7 @@ group_uniforms;
 group_uniforms uv_handrawn;
 uniform bool use_uv_handrawn = false;
 #if defined(UV_HANDRAWN)
+	#include "Effects/Shared/vfez_uv_handrawn.gdshaderinc"
 	uniform float uv_handrawn_amount: hint_range(0.0, 40.0) = 10.;
 	uniform float uv_handrawn_speed: hint_range(0.0, 30.0) = 5.;
 #endif
@@ -346,6 +366,7 @@ group_uniforms;
 group_uniforms uv_shake;
 uniform bool use_uv_shake = false;
 #if defined(UV_SHAKE)
+	#include "Effects/Shared/vfez_uv_shake.gdshaderinc"
 	uniform float uv_shake_speed: hint_range(0.0, 50.0) = 20.;
 	uniform float uv_shake_x: hint_range(-15., 15) = 5;
 	uniform float uv_shake_y: hint_range(-15., 15) = 4;
@@ -355,6 +376,7 @@ group_uniforms;
 group_uniforms uv_wave;
 uniform bool use_uv_wave = false;
 #if defined(UV_WAVE)
+	#include "Effects/Shared/vfez_uv_wave.gdshaderinc"
 	uniform float uv_wave_amount: hint_range(0.0, 25.0) = 7.;
 	uniform float uv_wave_speed: hint_range(0.0, 25.0) = 10.;
 	uniform float uv_wave_strength: hint_range(0.0, 25.0) = 7.5;
@@ -366,6 +388,7 @@ group_uniforms;
 group_uniforms uv_round_wave;
 uniform bool use_uv_round_wave = false;
 #if defined(UV_ROUND_WAVE)
+	#include "Effects/Shared/vfez_uv_round_wave.gdshaderinc"
 	uniform float uv_round_wave_strength: hint_range(0.0, 1.0) = 0.7;
 	uniform float uv_round_wave_speed: hint_range(0.0, 5.0) = 2.;
 #endif
@@ -385,6 +408,7 @@ group_uniforms;
 group_uniforms vertex_offset;
 uniform bool use_vertex_offset = false;
 #if defined(VERTEX_OFFSET)
+	#include "Effects/3D/vfez_vertex_offset.gdshaderinc"
 	uniform sampler2D vertex_offset_texture: source_color;
 	uniform float vertex_offset_amount: hint_range(0.0, 2.) = 0.5;
 	uniform float vertex_offset_power: hint_range(0.01, 10.) = 1.;
@@ -395,96 +419,30 @@ group_uniforms;
 group_uniforms vertex_expand;
 uniform bool use_vertex_expand;
 #if defined(VERTEX_EXPAND)
+	#include "Effects/3D/vfez_vertex_expand.gdshaderinc"
 	uniform vec3 vertex_expand_center = vec3(0.);
 	uniform bool vertex_expand_ignore_center_vertical = false;
 	uniform float vertex_expand_amount: hint_range(0.0, 10.) = 0.5;
 #endif
 group_uniforms;
 
-#if defined(PARTICLE_OPTIONS)
-	group_uniforms particle;
-	uniform bool use_particle_trails = false;
-	uniform bool use_particle_anim = false;
-	group_uniforms;
+group_uniforms particle;
+uniform bool use_particle_trails = false;
+uniform bool use_particle_anim = false;
+group_uniforms;
 
-	#if defined(PARTICLE_ANIM)
-		group_uniforms particle.particle_anim;
-		uniform int particles_anim_h_frames : hint_range(1, 128) = 1;
-		uniform int particles_anim_v_frames : hint_range(1, 128) = 1;
-		uniform bool particles_anim_loop;
-		group_uniforms;
-	#endif
+#if defined(PARTICLE_ANIM)
+	group_uniforms particle.particle_anim;
+	uniform int particles_anim_h_frames : hint_range(1, 128) = 1;
+	uniform int particles_anim_v_frames : hint_range(1, 128) = 1;
+	uniform bool particles_anim_loop;
+	group_uniforms;
 #endif
+
 
 varying vec3 view_direction;
 varying vec3 world_normal;
 varying vec2 screenspace_uv;
-
-
-// helper functions ------------------------------------------
-vec2 transform_uv(vec2 uv, vec2 scale, vec2 offset)
-{
-	return uv * scale + offset;
-}
-
-vec2 uv_polar(vec2 uv, vec2 center)
-{
-	vec2 dir = uv - center;
-	float radius = length(dir) * 2.;
-	float angle = atan(dir.y, dir.x) / (2. * PI);
-	vec2 polarUV = vec2(angle, radius);
-	//baseUV = mod(vec2(radius, angle), 1.0);
-	polarUV *= shape1_main_texture_scale;
-	return polarUV;
-}
-
-vec2 rotate_uvs(vec2 uv, float rotation, vec2 scale, vec2 offset)
-{
-	vec2 center = vec2(0.5 * scale.x + offset.x, 0.5 * scale.y + offset.y);
-	float cosAngle = cos(rotation);
-	float sinAngle = sin(rotation);
-	uv -= center;
-	uv = mat2(vec2(cosAngle, -sinAngle), vec2(sinAngle, cosAngle)) *  uv;
-	uv += center;
-	return uv;
-}
-
-vec4 sample_texture_with_scroll(sampler2D tex, vec2 uv, vec2 scroll_speed, float time)
-{
-	uv.x += mod(time * scroll_speed.x, 1);
-	uv.y += mod(time * scroll_speed.y, 1);
-	return texture(tex, uv);
-}
-
-float rand(vec2 seed, float offset) {
-	return mod(fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453) + offset, 1.0);
-}
-
-float rand2(vec2 seed, float offset, float time) {
-	return mod(
-			fract(
-				sin(
-					dot(seed * floor(50. + mod(time, 1.0) * 12.), vec2(127.1, 311.7))
-				) * 43758.5453123
-			) + offset, 1.0);
-}
-
-float remap_float(float inValue, float inMin, float inMax, float outMin, float outMax){
-	return outMin + (inValue - inMin) * (outMax - outMin) / (inMax - inMin);
-}
-
-float ease_out_quint(float x) {
-	return 1. - pow(1. - x, 5.);
-}
-
-float get_color_luminance(vec4 color)
-{
-	float luminance = 0.3 * color.r + 0.59 * color.g + 0.11 * color.b;
-	luminance *= color.a;
-	return luminance;
-}
-
-// helper functions end -----------------------------------------
 
 // calculate single shape function ------------------------------
 
@@ -520,7 +478,8 @@ vec4 calculate_shape(
 	shapeUV = transform_uv(
 					shapeUV,
 					shape_main_texture_scale,
-					shape_main_texture_offset);
+					shape_main_texture_offset,
+					false);
 
 
 	if (shape_distortion_amount > 0.)
@@ -532,18 +491,16 @@ vec4 calculate_shape(
 		distortionUV = transform_uv(
 						distortionUV,
 						shape_distortion_texture_scale,
-						shape_distortion_texture_offset);
+						shape_distortion_texture_offset,
+						false);
 
 		if (shape_use_polar_uv && shape_distortion_polar_uvs)
 		{
 			distortionUV = uv_polar(distortionUV, shape_polar_uv_center);
 		}
 
-		distortionUV += mod(TIME * shape_distortion_speed, vec2(1.));
-
-		float distortAmount =
-			(texture(shape_distortion_texture, distortionUV).r - 0.5) * 0.2 * shape_distortion_amount;
-		shapeUV += vec2(1.) * distortAmount;
+		shapeUV = uv_distortion(shapeUV, shape_distortion_texture, distortionUV,
+			shape_distortion_amount, shape_distortion_speed, false);
 	}
 
 	shapeUV = rotate_uvs(
@@ -590,6 +547,21 @@ vec4 calculate_shape(
 	}
 
 	return shape;
+}
+
+bool is_using_screen_space_uv()
+{
+	bool using_shape2_screenspace_uv = false;
+	bool using_shape3_screenspace_uv = false;
+	#if defined(SHAPE2)
+		using_shape2_screenspace_uv = shape2_use_screenspace_uv;
+	#endif
+
+	#if defined(SHAPE3)
+		using_shape3_screenspace_uv = shape3_use_screenspace_uv;
+	#endif
+
+	return shape1_use_screenspace_uv || using_shape2_screenspace_uv || using_shape3_screenspace_uv;
 }
 
 // ---------------------------------------------------
@@ -639,27 +611,19 @@ void vertex() {
 	#if defined(VERTEX_OFFSET)
 		if (use_vertex_offset)
 		{
-			vec2 offsetUV = UV;
-			offsetUV += mod(TIME * vertex_offset_speed, 1.0);
-			float offset = textureLod(vertex_offset_texture, offsetUV, 0.).r;
-			VERTEX += NORMAL * vertex_offset_amount * pow(offset, vertex_offset_power);
+			VERTEX = vertex_offset(VERTEX, NORMAL, UV, vertex_offset_texture,
+					vertex_offset_amount, vertex_offset_power, vertex_offset_speed);
 		}
 	#endif
 
 	#if defined(VERTEX_EXPAND)
 		if (use_vertex_expand)
 		{
-			vec3 final_expand_center = vertex_expand_center;
-			if (vertex_expand_ignore_center_vertical)
-			{
-				final_expand_center.z = VERTEX.z;
-			}
-			vec3 expand_dir = normalize(VERTEX - final_expand_center);
-			VERTEX += expand_dir * vertex_expand_amount;
+			VERTEX = vertex_expand(VERTEX, vertex_expand_center, vertex_expand_ignore_center_vertical, vertex_expand_amount);
 		}
 	#endif
 
-	#if defined(PARTICLE_OPTIONS) && defined(PARTICLE_ANIM)
+	#if defined(PARTICLE_ANIM)
 		if (use_particle_anim)
 		{
 			float h_frames = float(particles_anim_h_frames);
@@ -676,21 +640,10 @@ void vertex() {
 		}
 	#endif
 
-	// check if using screenspace uv on shape2 or 3
-	bool using_shape2_screenspace_uv = false;
-	bool using_shape3_screenspace_uv = false;
-	#if defined(SHAPE2)
-		using_shape2_screenspace_uv = shape2_use_screenspace_uv;
-	#endif
-
-	#if defined(SHAPE3)
-		using_shape3_screenspace_uv = shape3_use_screenspace_uv;
-	#endif
+	bool using_screen_space_uv = is_using_screen_space_uv();
 
 	// only calculate screenspace uv if used at least by 1 shape
-	if (shape1_use_screenspace_uv ||
-		using_shape2_screenspace_uv ||
-		using_shape3_screenspace_uv )
+	if (using_screen_space_uv)
 	{
 		vec4 position_v = MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
 		vec4 position_cs = PROJECTION_MATRIX * vec4(position_v.xyz, 1.0);
@@ -701,7 +654,6 @@ void vertex() {
 
 void fragment() {
 
-
 	// clamp UVS near edges (0., 1., 2., 3., 4., 5.) to reduce folding artifacts
 	vec2 uv_floor_top_included = max(vec2(0.), ceil(UV) - vec2(1.));
 	vec2 clampedUV = clamp(UV, vec2(0.001) + uv_floor_top_included, vec2(0.999) + uv_floor_top_included);
@@ -710,62 +662,37 @@ void fragment() {
 	#if defined(UV_PIXELATE)
 		if (use_uv_pixelate)
 		{
-			float aspect_ratio = VIEWPORT_SIZE.x / VIEWPORT_SIZE.y;
-			vec2 pixel_size = vec2(float(uv_pixelate_size), float(uv_pixelate_size) * aspect_ratio);
-			baseUV = floor(baseUV * pixel_size) / pixel_size;
+			baseUV = uv_pixelate(baseUV, VIEWPORT_SIZE, uv_pixelate_size);
 		}
 	#endif
 
 	#if defined(UV_TWIST)
 		if (use_uv_twist)
 		{
-			vec2 twistUV = baseUV - vec2(uv_twist_pos_x * shape1_main_texture_scale.x,
-										uv_twist_pos_y * shape1_main_texture_scale.y);
-			float twist_radius = uv_twist_radius *
-					(shape1_main_texture_scale.x + shape1_main_texture_scale.y) / 2.;
-			float percent = (twist_radius - length(twistUV)) / twist_radius;
-			float theta = percent * percent * (2.0 * sin(uv_twist_amount)) * 8.0;
-			float s = sin(theta);
-			float c = cos(theta);
-			float beta = max(sign(twist_radius - length(twistUV)), 0.);
-			twistUV = vec2(dot(twistUV, vec2(c, -s)), dot(twistUV, vec2(s, c))) * beta + twistUV * (1. - beta);
-			twistUV += vec2(uv_twist_pos_x * shape1_main_texture_scale.x,
-							uv_twist_pos_y * shape1_main_texture_scale.y);
-			baseUV = twistUV;
+			baseUV = uv_twist(baseUV, shape1_main_texture_scale, uv_twist_amount,
+							uv_twist_pos_x, uv_twist_pos_y, uv_twist_radius);
 		}
 	#endif
 
 	#if defined(UV_HANDRAWN)
 		if (use_uv_handrawn)
 		{
-			vec2 handrawnUV = baseUV;
-			float handrawn_speed =
-				floor(TIME * 20. * uv_handrawn_speed);
-			handrawnUV.x = sin((handrawnUV.x * uv_handrawn_amount + handrawn_speed / 2.) * 4.);
-			handrawnUV.y = sin((handrawnUV.y * uv_handrawn_amount + handrawn_speed / 2.) * 4.);
-			baseUV = mix(baseUV, baseUV + handrawnUV, 0.0005 * uv_handrawn_amount);
+			baseUV = uv_handrawn(baseUV, uv_handrawn_amount, uv_handrawn_speed);
 		}
 	#endif
 
 	#if defined(UV_SHAKE)
 		if (use_uv_shake)
 		{
-			float x_shake = sin(TIME * uv_shake_speed * 50.) * uv_shake_x;
-			float y_shake = cos(TIME * uv_shake_speed * 50.) * uv_shake_y;
-			baseUV += vec2(x_shake * 0.012, y_shake * 0.01);
+			baseUV = uv_shake(baseUV, uv_shake_speed, uv_shake_x, uv_shake_y);
 		}
 	#endif
 
 	#if defined(UV_WAVE)
 		if (use_uv_wave)
 		{
-			vec2 waveUV = vec2(uv_wave_x * shape1_main_texture_scale.x,
-							uv_wave_y * shape1_main_texture_scale.y) - baseUV;
-			waveUV.x *= VIEWPORT_SIZE.x / VIEWPORT_SIZE.y;
-			float ang_wave =
-				(sqrt(dot(waveUV, waveUV)) * uv_wave_amount)
-				- mod(TIME * uv_wave_speed, 360.0);
-			baseUV = baseUV + normalize(waveUV) * sin(ang_wave) * (uv_wave_strength / 1000.);
+			baseUV = uv_wave(baseUV, VIEWPORT_SIZE, shape1_main_texture_scale, uv_wave_amount,
+								uv_wave_speed, uv_wave_strength, uv_wave_x, uv_wave_y);
 		}
 	#endif
 
@@ -773,28 +700,21 @@ void fragment() {
 		if (use_uv_round_wave)
 		{
 			vec2 main_tex_size = vec2(textureSize(shape1_main_texture, 0));
-			float round_wave_x = 0.5 * shape1_main_texture_scale.x - baseUV.x;
-			float round_wave_y = (0.5 * shape1_main_texture_scale.y - baseUV.y) *
-				 main_tex_size.y / main_tex_size.x;
-			float ripple = -sqrt(round_wave_x * round_wave_x + round_wave_y * round_wave_y);
-			baseUV += mod(sin((ripple + TIME * (uv_round_wave_speed/10.0)) / 0.015)
-				* (uv_round_wave_strength /10.0), 1.0);
+			baseUV = uv_round_wave(baseUV, main_tex_size, shape1_main_texture_scale,
+					uv_round_wave_strength, uv_round_wave_speed);
 		}
 	#endif
 
 	#if defined(UV_GLOBAL_DISTORTION)
 		if (use_uv_global_distortion)
 		{
-			vec2 global_distortion_uv = baseUV;
-			global_distortion_uv += mod(TIME * uv_global_distortion_speed, 1.);
-			vec2 transformed_global_distortion_uv =
-				transform_uv(global_distortion_uv,
+			vec2 global_distortion_uv =
+				transform_uv(baseUV,
 							uv_global_distortion_texture_scale,
-							uv_global_distortion_texture_offset);
-			float global_distortion_amount =
-				(texture(uv_global_distortion_texture, transformed_global_distortion_uv).r - 0.5)
-				* 0.2 * uv_global_distortion_amount;
-			baseUV += global_distortion_amount;
+							uv_global_distortion_texture_offset,
+							false);
+			baseUV = uv_distortion(baseUV, uv_global_distortion_texture, global_distortion_uv,
+				uv_global_distortion_amount, uv_global_distortion_speed, false);
 		}
 	#endif
 
@@ -985,12 +905,6 @@ void fragment() {
 		color.rgb *= color.a;
 	}
 
-	//if (!premultiply_color)
-	//{
-		//luminance = 0.3 * color.r + 0.59 * color.g + 0.11 * color.b;
-		//luminance *= color.a;
-	//}
-
 	#if defined(ALPHA_DISOLVE)
 		if (use_alpha_disolve)
 		{
@@ -1001,50 +915,20 @@ void fragment() {
 				pre_disolve_alpha *= luminance;
 			}
 
-			float disolve_amount = clamp(alpha_disolve_amount + (1. - COLOR.a), 0., 1.);
-			float disolve_transition = max(0.01, alpha_disolve_transition * ease_out_quint(disolve_amount));
-			vec2 disolve_uv = baseUV;
-			disolve_uv = transform_uv(disolve_uv, alpha_disolve_texture_scale, alpha_disolve_texture_offset);
-			disolve_uv += mod(TIME * alpha_disolve_scroll_speed, 1.0);
-			disolve_amount = clamp(pow(disolve_amount, alpha_disolve_power), 0., 1.);
-			float disolve_sample = texture(alpha_disolve_texture, disolve_uv).r;
-			float disolve = clamp(
-				smoothstep(
-						0.0,
-						disolve_transition,
-						remap_float(1.0 - disolve_amount, 0.0, 1.0, -1.0, 1.0) + disolve_sample
-				), 0., 1.);
+			vec2 disolve_uv = transform_uv(baseUV, alpha_disolve_texture_scale, alpha_disolve_texture_offset, false);
 
-			color.a *= disolve;
-
-			if (use_alpha_disolve_burn)
-			{
-				float disolve_burn = clamp(
-						smoothstep(
-							0.,
-							disolve_transition + alpha_disolve_burn_width,
-							remap_float(1.0 - disolve_amount, 0.0, 1.0, -1.0, 1.0) + disolve_sample
-						), 0., 1.
-					);
-
-				disolve_burn = disolve - disolve_burn;
-				vec3 disolve_burn_color = alpha_disolve_burn_color.rgb * alpha_disolve_burn_glow;
-
-				color.rgb += disolve_burn *
-						texture(alpha_disolve_burn_texture, disolve_uv).rgb
-						* disolve_burn_color.rgb
-						* pre_disolve_alpha;
-			}
+			color = alpha_disolve(color, pre_disolve_alpha, COLOR.a, alpha_disolve_texture, disolve_uv,
+						alpha_disolve_amount, alpha_disolve_transition, alpha_disolve_power,
+						alpha_disolve_scroll_speed, use_alpha_disolve_burn, alpha_disolve_burn_texture, alpha_disolve_burn_color,
+						alpha_disolve_burn_width, alpha_disolve_burn_glow);
 		}
 	#endif
 
 	#if defined(COLOR_FACE_TINT)
 		if (use_color_face_tint)
 		{
-			color.rgb = mix(
-				color.rgb * backface_tint_color,
-				color.rgb * frontface_tint_color,
-				step(0, dot(world_normal, view_direction)));
+			color.rgb = color_face_tint(color.rgb, backface_tint_color,
+					frontface_tint_color, world_normal, view_direction);
 		}
 	#endif
 
@@ -1052,24 +936,8 @@ void fragment() {
 	#if defined(COLOR_GRADING)
 		if (use_color_grading)
 		{
-			float luminance = get_color_luminance(color);
-			vec3 color_grading_dark_middle_mix = mix(
-				color_grading_dark_tone,
-				color_grading_mid_tone,
-				luminance / color_grading_mid_point
-			);
-
-			vec3 color_grading_middle_light_mix = mix(
-				color_grading_mid_tone,
-				color_grading_light_tone,
-				(luminance - color_grading_mid_point) / (1.0 - color_grading_mid_point)
-			);
-
-			color.rgb *= mix(
-				color_grading_dark_middle_mix,
-				color_grading_middle_light_mix,
-				step(color_grading_mid_point, luminance)
-			);
+			color.rgb = color_grading(color, color_grading_light_tone,
+				color_grading_mid_tone, color_grading_dark_tone, color_grading_mid_point);
 		}
 	#endif
 
@@ -1077,105 +945,68 @@ void fragment() {
 	#if defined(COLOR_RAMP)
 		if (use_color_ramp)
 		{
-			float luminance = get_color_luminance(color);
-			float color_ramp_luminance = clamp(luminance + color_ramp_luminosity, 0., 1.);
-			vec4 color_ramp_res = texture(color_ramp_texture, vec2(color_ramp_luminance)) * color_ramp_albedo;
-			color.rgb = mix(color.rgb, color_ramp_res.rgb, color_ramp_blend);
-			color.a = mix(color.a, clamp(color.a * color_ramp_res.a, 0., 1.), color_ramp_blend);
+			color = color_ramp(color, color_ramp_albedo,
+					color_ramp_texture, color_ramp_luminosity, color_ramp_blend);
 		}
 	#endif
 
 	#if defined(COLOR_POSTERIZE)
 		if (use_color_posterize)
 		{
-			color.rgb = floor(color.rgb / (1.0 / color_posterize_num_colors)) * (1.0 / color_posterize_num_colors);
+			color.rgb = color_posterize(color.rgb, color_posterize_num_colors);
 		}
 	#endif
 
 	#if defined(COLOR_RIM)
 		if (use_color_rim)
 		{
-			float ndv = 1. - abs(dot(NORMAL, VIEW));
-		   	float rim_factor = clamp(
-				rim_bias + rim_scale * pow(ndv, rim_power), 0., 1.);
-		    vec4 final_rim_color = rim_color * rim_factor;
-		    final_rim_color.rgb *= rim_intensity;
-		   	color.rgb = mix(
-				color.rgb * (final_rim_color.rgb + vec3(1.)),
-				color.rgb + final_rim_color.rgb,
-				rim_add_amount);
-		   	color.a = clamp(
-				color.a * (1. - rim_factor * rim_erodes_alpha),
-				0.,
-				1.);
+			color = color_rim(color, NORMAL, VIEW, rim_color,
+					rim_bias, rim_scale, rim_power, rim_intensity,
+					rim_add_amount, rim_erodes_alpha);
 		}
 	#endif
 
 	#if defined(COLOR_GLOW)
 		if (use_color_glow)
 		{
-			float glow_mask = 1.;
-
-			if (use_glow_texture)
-			{
-				glow_mask = texture(glow_texture, baseUV).r;
-			}
-
 			float glow_mult = 1.;
 			if (additive_config)
 			{
 				float luminance = get_color_luminance(color);
 				glow_mult = luminance;
 			}
-			color.rgb *= glow_intensity_global * glow_mask;
-			color.rgb += glow_color.rgb * glow_intensity * glow_mask * color.a * glow_mult;
+
+			color.rgb = color_glow(color, glow_texture, use_glow_texture,
+					baseUV, glow_color.rgb, glow_mult, glow_intensity, glow_intensity_global);
 		}
 	#endif
 
 	#if defined(COLOR_HSV_SHIFT)
 		if (use_color_hsv_shift)
 		{
-			vec3 result_hsv = vec3(color.rgb);
-			float cos_hsv = v_shift * s_shift * cos(h_shift * PI / 180.);
-			float sin_hsv = v_shift * s_shift * sin(h_shift * PI / 180.);
-			result_hsv.x = (.299 * v_shift + .701 * cos_hsv + .168 * sin_hsv) * color.x
-				+ (.587 * v_shift - .587 * cos_hsv + .330 * sin_hsv) * color.y
-				+ (.114 * v_shift - .114 * cos_hsv - .497 * sin_hsv) * color.z;
-			result_hsv.y = (.299 * v_shift - .299 * cos_hsv - .328 * sin_hsv) *color.x
-				+ (.587 * v_shift + .413 * cos_hsv + .035 * sin_hsv) * color.y
-				+ (.114 * v_shift - .114 * cos_hsv + .292 * sin_hsv) * color.z;
-			result_hsv.z = (.299 * v_shift - .3 * cos_hsv + 1.25 * sin_hsv) * color.x
-				+ (.587 * v_shift - .588 * cos_hsv - 1.05 * sin_hsv) * color.y
-				+ (.114 * v_shift + .886 * cos_hsv - .203 * sin_hsv) * color.z;
-			color.rgb = result_hsv;
+			color.rgb = hsv_shift(color.rgb, h_shift, s_shift, v_shift);
 		}
 	#endif
 
 	#if defined(ALPHA_MASK)
 		if (use_alpha_mask)
 		{
-			vec2 alphaMaskUV = clampedUV;
-			alphaMaskUV = transform_uv(alphaMaskUV, alpha_mask_scale, alpha_mask_offset);
-			vec4 alpha_mask_sample = texture(alpha_mask_texture, alphaMaskUV);
-			float mask = pow(min(alpha_mask_sample.r, alpha_mask_sample.a), alpha_mask_power);
-			color.a *= mask;
+			vec2 alpha_mask_uv = transform_uv(clampedUV, alpha_mask_scale, alpha_mask_offset, false);
+			color.a = alpha_mask(color.a, alpha_mask_texture, alpha_mask_uv, alpha_mask_power);
 		}
 	#endif
 
 	#if defined(ALPHA_REMAP)
 		if (use_alpha_remap)
 		{
-			color.a = smoothstep(alpha_remap_min, alpha_remap_max, color.a);
+			color.a = alpha_remap(color.a, alpha_remap_min, alpha_remap_max);
 		}
 	#endif
 
 	#if defined(ALPHA_CUTOFF)
 		if (use_alpha_cutoff)
 		{
-			if (((1. - alpha_cuttof_value) - (1. - color.a) - 0.01) < 0.)
-			{
-				color.a = 0.;
-			}
+			color.a = alpha_cutoff(color.a);
 		}
 	#endif
 

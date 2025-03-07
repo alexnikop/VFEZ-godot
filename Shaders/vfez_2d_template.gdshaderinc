@@ -5,6 +5,8 @@
 
 // shader code starts here -----------------------------------------------
 
+#include "Effects/vfez_utils.gdshaderinc"
+
 #if defined(UNSHADED)
 	render_mode unshaded;
 #elif defined(LIGHT_ONLY)
@@ -27,7 +29,6 @@ group_uniforms base;
 uniform vec2 texture_scale = vec2(1.);
 uniform vec2 texture_offset = vec2(0.);
 uniform vec2 texture_scroll_speed = vec2(0.);
-uniform bool replicate_texture_on_scale = true;
 uniform bool apply_scale_offset_after_uv_effects;
 uniform vec4 texture_color: source_color = vec4(1.);
 uniform float texture_alpha: hint_range(0.0, 1.0) = 1.;
@@ -277,76 +278,6 @@ uniform bool use_particle_anim = false;
 #endif
 group_uniforms;
 
-// helper functions ------------------------------------------
-vec2 transform_uv(vec2 uv, vec2 scale, vec2 offset)
-{
-	uv = uv * scale + offset;
-	if (replicate_texture_on_scale)
-		uv = fract(uv);
-	return uv;
-
-}
-
-vec2 uv_polar(vec2 uv, vec2 center)
-{
-	vec2 dir = uv - center;
-	float radius = length(dir) * 2.;
-	float angle = atan(dir.y, dir.x) / (2. * PI);
-	vec2 polarUV = vec2(angle, radius);
-	//baseUV = mod(vec2(radius, angle), 1.0);
-	return polarUV;
-}
-
-vec2 rotate_uvs(vec2 uv, float rotation, vec2 scale, vec2 offset)
-{
-	vec2 center = vec2(0.5 * scale.x + offset.x, 0.5 * scale.y + offset.y);
-	float cosAngle = cos(rotation);
-	float sinAngle = sin(rotation);
-	uv -= center;
-	uv = mat2(vec2(cosAngle, -sinAngle), vec2(sinAngle, cosAngle)) *  uv;
-	uv += center;
-	return uv;
-}
-
-vec4 sample_texture_with_scroll(sampler2D tex, vec2 uv, vec2 scroll_speed, float time)
-{
-	uv.x += mod(time * scroll_speed.x, 1);
-	uv.y += mod(time * scroll_speed.y, 1);
-	if (scroll_speed != vec2(0.))
-		uv = fract(uv);
-	return texture(tex, uv);
-}
-
-float rand(vec2 seed, float offset) {
-	return mod(fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453) + offset, 1.0);
-}
-
-float rand2(vec2 seed, float offset, float time) {
-	return mod(
-			fract(
-				sin(
-					dot(seed * floor(50. + mod(time, 1.0) * 12.), vec2(127.1, 311.7))
-				) * 43758.5453123
-			) + offset, 1.0);
-}
-
-float remap_float(float inValue, float inMin, float inMax, float outMin, float outMax){
-	return outMin + (inValue - inMin) * (outMax - outMin) / (inMax - inMin);
-}
-
-float ease_out_quint(float x) {
-	return 1. - pow(1. - x, 5.);
-}
-
-float get_color_luminance(vec4 color)
-{
-	float luminance = 0.3 * color.r + 0.59 * color.g + 0.11 * color.b;
-	luminance *= color.a;
-	return luminance;
-}
-
-// helper functions end -----------------------------------------
-
 void vertex() {
 	#if defined(PARTICLE_ANIM)
 		if (use_particle_anim)
@@ -377,7 +308,8 @@ void fragment() {
 		baseUV = transform_uv(
 						baseUV,
 						texture_scale,
-						texture_offset);
+						texture_offset,
+						true);
 
 	#if defined(UV_PIXELATE)
 		if (use_uv_pixelate)
@@ -473,7 +405,8 @@ void fragment() {
 			distortionUV = transform_uv(
 							distortionUV,
 							distortion_tex_scale,
-							distortion_tex_offset);
+							distortion_tex_offset,
+							true);
 
 			#if defined(UV_POLAR)
 				if (use_uv_polar && distortion_uses_uv_polar)
@@ -507,7 +440,8 @@ void fragment() {
 		baseUV = transform_uv(
 						baseUV,
 						texture_scale,
-						texture_offset);
+						texture_offset,
+						true);
 
 	vec4 color = sample_texture_with_scroll(
 			TEXTURE,
@@ -574,7 +508,11 @@ void fragment() {
 			float disolve_amount = clamp(alpha_disolve_amount + (1. - COLOR.a), 0., 1.);
 			float disolve_transition = max(0.01, alpha_disolve_transition * ease_out_quint(disolve_amount));
 			vec2 disolve_uv = baseUV;
-			disolve_uv = transform_uv(disolve_uv, alpha_disolve_texture_scale, alpha_disolve_texture_offset);
+			disolve_uv = transform_uv(
+				disolve_uv,
+				alpha_disolve_texture_scale,
+				alpha_disolve_texture_offset,
+				true);
 			disolve_uv += mod(TIME * alpha_disolve_scroll_speed, 1.0);
 			disolve_amount = clamp(pow(disolve_amount, alpha_disolve_power), 0., 1.);
 			float disolve_sample = texture(alpha_disolve_texture, disolve_uv).r;
@@ -717,7 +655,8 @@ void fragment() {
 				vec2 outlineDistUV = transform_uv(
 					baseUV,
 					outline_distortion_texture_scale,
-					outline_distortion_texture_offset);
+					outline_distortion_texture_offset,
+					true);
 
 				outlineDistUV += mod(TIME * outline_distortion_texture_scroll_speed,vec2(1.));
 				outlineDistUV = fract(outlineDistUV);
@@ -742,7 +681,8 @@ void fragment() {
 				vec2 outlineTexUV = transform_uv(
 					baseUV,
 					outline_texture_scale,
-					outline_texture_offset);
+					outline_texture_offset,
+					true);
 
 				outlineTexUV += mod(TIME * outline_texture_scroll_speed,vec2(1.));
 				outlineTexUV = fract(outlineTexUV);
@@ -770,7 +710,11 @@ void fragment() {
 		if (use_alpha_mask)
 		{
 			vec2 alphaMaskUV = baseUV;
-			alphaMaskUV = transform_uv(alphaMaskUV, alpha_mask_scale, alpha_mask_offset);
+			alphaMaskUV = transform_uv(
+				alphaMaskUV,
+				alpha_mask_scale,
+				alpha_mask_offset,
+				true);
 			vec4 alpha_mask_sample = texture(alpha_mask_texture, alphaMaskUV);
 			float mask = pow(min(alpha_mask_sample.r, alpha_mask_sample.a), alpha_mask_power);
 			color.a *= mask;
@@ -795,5 +739,8 @@ void fragment() {
 	#endif
 
 	color.a *= texture_alpha;
+
+	// if the following line throws an error thats a godot bug, ignore it.
+	// Shader works as intented
 	COLOR = color;
 }

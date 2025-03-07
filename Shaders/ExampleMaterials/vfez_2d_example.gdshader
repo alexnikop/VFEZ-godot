@@ -29,6 +29,7 @@ shader_type canvas_item;
 #define ALPHA_REMAP
 #define ALPHA_CUTOFF
 
+#define OUTLINE
 #define UV_ROTATION
 #define UV_SCROLL
 #define UV_POLAR
@@ -44,4 +45,4 @@ shader_type canvas_item;
 #define VERTEX_OFFSET
 #define VERTEX_EXPAND
 
-#include "vfez_2d_template.gdshaderinc"
+#include "../vfez_2d_template.gdshaderinc"

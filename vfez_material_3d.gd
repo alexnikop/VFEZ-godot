@@ -27,7 +27,7 @@ var render_options_definitions: Dictionary[String, Array] =\
 		"DiffuseMode" : ["DIFFUSE_LAMBERT", "DIFFUSE_LABERT_WRAP", "DIFFUSE_BURLEY", "DIFFUSE_TOON"],
 		"SpecularMode" : ["SPECULAR_SCHLICK_GGX", "SPECULAR_TOON", "SPECULAR_DISABLED"],
 		"ShadingMode" : ["UNSHADED", ""],
-		"BillboardMode" : ["", "BILLBOARD_ENABLED", "BILLBOARD_Y", "BILLBOARD_PARTICLE,PARTICLE_OPTIONS"],
+		"BillboardMode" : ["", "BILLBOARD_ENABLED", "BILLBOARD_Y", "BILLBOARD_PARTICLE"],
 		"NoDepthTest" : ["", "NO_DEPTH_TEST"],
 		"BillboardKeepScale" : ["", "BILLBOARD_KEEP_SCALE"]
 	}
