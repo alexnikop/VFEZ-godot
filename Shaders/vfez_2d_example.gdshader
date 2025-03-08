@@ -53,4 +53,4 @@ shader_type canvas_item;
 #define VERTEX_EXPAND
 #define PARTICLE_ANIM
 
-#include "../vfez_2d_template.gdshaderinc"
+#include "vfez_2d_template.gdshaderinc"

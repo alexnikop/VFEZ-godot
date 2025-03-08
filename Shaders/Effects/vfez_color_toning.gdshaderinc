@@ -1,5 +1,5 @@
 #ifndef VFEZ_UTILS
-	#include "../vfez_utils.gdshaderinc"
+	#include "vfez_utils.gdshaderinc"
 	#define VFEZ_UTILS
 #endif
 

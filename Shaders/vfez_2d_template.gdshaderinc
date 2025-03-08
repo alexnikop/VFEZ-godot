@@ -74,231 +74,231 @@ group_uniforms uv_pixelate;
 uniform bool use_uv_pixelate = false;
 group_uniforms;
 #if defined(UV_PIXELATE)
-	#include "Effects/Shared/vfez_uv_pixelate.gdshaderinc"
+	#include "Effects/vfez_uv_pixelate.gdshaderinc"
 #endif
 
 group_uniforms uv_twist;
 uniform bool use_uv_twist = false;
 group_uniforms;
 #if defined(UV_TWIST)
-	#include "Effects/Shared/vfez_uv_twist.gdshaderinc"
+	#include "Effects/vfez_uv_twist.gdshaderinc"
 #endif
 
 group_uniforms uv_fisheye;
 uniform bool use_uv_fisheye;
 group_uniforms;
 #if defined(UV_FISHEYE)
-	#include "Effects/2D/vfez_uv_fisheye.gdshaderinc"
+	#include "Effects/vfez_uv_fisheye.gdshaderinc"
 #endif
 
 group_uniforms uv_pinch;
 uniform bool use_uv_pinch;
 group_uniforms;
 #if defined(UV_PINCH)
-	#include "Effects/2D/vfez_uv_pinch.gdshaderinc"
+	#include "Effects/vfez_uv_pinch.gdshaderinc"
 #endif
 
 group_uniforms uv_handrawn;
 uniform bool use_uv_handrawn = false;
 group_uniforms;
 #if defined(UV_HANDRAWN)
-	#include "Effects/Shared/vfez_uv_handrawn.gdshaderinc"
+	#include "Effects/vfez_uv_handrawn.gdshaderinc"
 #endif
 
 group_uniforms uv_shake;
 uniform bool use_uv_shake = false;
 group_uniforms;
 #if defined(UV_SHAKE)
-	#include "Effects/Shared/vfez_uv_shake.gdshaderinc"
+	#include "Effects/vfez_uv_shake.gdshaderinc"
 #endif
 
 group_uniforms uv_wave;
 uniform bool use_uv_wave = false;
 group_uniforms;
 #if defined(UV_WAVE)
-	#include "Effects/Shared/vfez_uv_wave.gdshaderinc"
+	#include "Effects/vfez_uv_wave.gdshaderinc"
 #endif
 
 group_uniforms uv_round_wave;
 uniform bool use_uv_round_wave = false;
 group_uniforms;
 #if defined(UV_ROUND_WAVE)
-	#include "Effects/Shared/vfez_uv_round_wave.gdshaderinc"
+	#include "Effects/vfez_uv_round_wave.gdshaderinc"
 #endif
 
 group_uniforms uv_wind;
 uniform bool use_uv_wind = false;
 group_uniforms;
 #if defined(UV_WIND)
-	#include "Effects/2D/vfez_uv_wind.gdshaderinc"
+	#include "Effects/vfez_uv_wind.gdshaderinc"
 #endif
 
 group_uniforms uv_wrap;
 uniform bool use_uv_wrap = false;
 group_uniforms;
 #if defined(UV_WRAP)
-	#include "Effects/2D/vfez_uv_wrap.gdshaderinc"
+	#include "Effects/vfez_uv_wrap.gdshaderinc"
 #endif
 
 group_uniforms uv_zoom;
 uniform bool use_uv_zoom = false;
 group_uniforms;
 #if defined(UV_ZOOM)
-	#include "Effects/2D/vfez_uv_zoom.gdshaderinc"
+	#include "Effects/vfez_uv_zoom.gdshaderinc"
 #endif
 
 group_uniforms color_single;
 uniform bool use_color_single;
 group_uniforms;
 #if defined(COLOR_SINGLE)
-	#include "Effects/2D/vfez_color_single.gdshaderinc"
+	#include "Effects/vfez_color_single.gdshaderinc"
 #endif
 
 group_uniforms color_overlay_texture;
 uniform bool use_color_overlay_texture;
 group_uniforms;
 #if defined(COLOR_OVERLAY_TEXTURE)
-	#include "Effects/2D/vfez_color_overlay_texture.gdshaderinc"
+	#include "Effects/vfez_color_overlay_texture.gdshaderinc"
 #endif
 
 group_uniforms outline;
 uniform bool use_outline;
 group_uniforms;
 #if defined(OUTLINE)
-	#include "Effects/2D/vfez_outline.gdshaderinc"
+	#include "Effects/vfez_outline.gdshaderinc"
 #endif
 
 group_uniforms outline_inner;
 uniform bool use_outline_inner;
 group_uniforms;
 #if defined(OUTLINE_INNER)
-	#include "Effects/2D/vfez_outline_inner.gdshaderinc"
+	#include "Effects/vfez_outline_inner.gdshaderinc"
 #endif
 
 group_uniforms alpha_disolve;
 uniform bool use_alpha_disolve = false;
 group_uniforms;
 #if defined(ALPHA_DISOLVE)
-	#include "Effects/Shared/vfez_alpha_disolve.gdshaderinc"
+	#include "Effects/vfez_alpha_disolve.gdshaderinc"
 #endif
 
 group_uniforms chromatic_aberration;
 uniform bool use_chromatic_aberration;
 group_uniforms;
 #if defined(CHROMATIC_ABERRATION)
-	#include "Effects/2D/vfez_chromatic_aberration.gdshaderinc"
+	#include "Effects/vfez_chromatic_aberration.gdshaderinc"
 #endif
 
 group_uniforms motion_blur;
 uniform bool use_motion_blur = false;
 group_uniforms;
 #if defined(MOTION_BLUR)
-	#include "Effects/2D/vfez_motion_blur.gdshaderinc"
+	#include "Effects/vfez_motion_blur.gdshaderinc"
 #endif
 
 group_uniforms glitch;
 uniform bool use_glitch = false;
 group_uniforms;
 #if defined(GLITCH)
-	#include "Effects/2D/vfez_glitch.gdshaderinc"
+	#include "Effects/vfez_glitch.gdshaderinc"
 #endif
 
 group_uniforms color_gradient;
 uniform bool use_color_gradient = false;
 group_uniforms;
 #if defined(COLOR_GRADIENT)
-	#include "Effects/2D/vfez_color_gradient.gdshaderinc"
+	#include "Effects/vfez_color_gradient.gdshaderinc"
 #endif
 
 group_uniforms color_radial_gradient;
 uniform bool use_color_radial_gradient = false;
 group_uniforms;
 #if defined(COLOR_RADIAL_GRADIENT)
-	#include "Effects/2D/vfez_color_radial_gradient.gdshaderinc"
+	#include "Effects/vfez_color_radial_gradient.gdshaderinc"
 #endif
 
 group_uniforms color_toning;
 uniform bool use_color_toning = false;
 group_uniforms;
 #if defined(COLOR_TONING)
-	#include "Effects/Shared/vfez_color_toning.gdshaderinc"
+	#include "Effects/vfez_color_toning.gdshaderinc"
 #endif
 
 group_uniforms color_ramp;
 uniform bool use_color_ramp = false;
 group_uniforms;
 #if defined(COLOR_RAMP)
-	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
+	#include "Effects/vfez_color_ramp.gdshaderinc"
 #endif
 
 group_uniforms color_change;
 uniform bool use_color_change = false;
 group_uniforms;
 #if defined(COLOR_CHANGE)
-	#include "Effects/2D/vfez_color_change.gdshaderinc"
+	#include "Effects/vfez_color_change.gdshaderinc"
 #endif
 
 group_uniforms color_ghost;
 uniform bool use_color_ghost = false;
 group_uniforms;
 #if defined(COLOR_GHOST)
-	#include "Effects/2D/vfez_color_ghost.gdshaderinc"
+	#include "Effects/vfez_color_ghost.gdshaderinc"
 #endif
 
 group_uniforms color_hologram;
 uniform bool use_color_hologram = false;
 group_uniforms;
 #if defined(COLOR_HOLOGRAM)
-	#include "Effects/2D/vfez_color_hologram.gdshaderinc"
+	#include "Effects/vfez_color_hologram.gdshaderinc"
 #endif
 
 group_uniforms color_posterize;
 uniform bool use_color_posterize = false;
 group_uniforms;
 #if defined(COLOR_POSTERIZE)
-	#include "Effects/Shared/vfez_color_posterize.gdshaderinc"
+	#include "Effects/vfez_color_posterize.gdshaderinc"
 #endif
 
 group_uniforms color_negative;
 uniform bool use_color_negative;
 group_uniforms;
 #if defined(COLOR_NEGATIVE)
-	#include "Effects/2D/vfez_color_negative.gdshaderinc"
+	#include "Effects/vfez_color_negative.gdshaderinc"
 #endif
 
 group_uniforms color_glow;
 uniform bool use_color_glow = false;
 group_uniforms;
 #if defined(COLOR_GLOW)
-	#include "Effects/Shared/vfez_color_glow.gdshaderinc"
+	#include "Effects/vfez_color_glow.gdshaderinc"
 #endif
 
 group_uniforms color_hsv_shift;
 uniform bool use_color_hsv_shift = false;
 group_uniforms;
 #if defined(COLOR_HSV_SHIFT)
-	#include "Effects/Shared/vfez_hsv_shift.gdshaderinc"
+	#include "Effects/vfez_hsv_shift.gdshaderinc"
 #endif
 
 group_uniforms color_shadow;
 uniform bool use_color_shadow = false;
 group_uniforms;
 #if defined(COLOR_SHADOW)
-	#include "Effects/2D/vfez_color_shadow.gdshaderinc"
+	#include "Effects/vfez_color_shadow.gdshaderinc"
 #endif
 
 group_uniforms color_greyscale;
 uniform bool use_color_greyscale= false;
 group_uniforms;
 #if defined(COLOR_GREYSCALE)
-	#include "Effects/2D/vfez_color_greyscale.gdshaderinc"
+	#include "Effects/vfez_color_greyscale.gdshaderinc"
 #endif
 
 group_uniforms color_shine;
 uniform bool use_color_shine= false;
 group_uniforms;
 #if defined(COLOR_SHINE)
-	#include "Effects/2D/vfez_color_shine.gdshaderinc"
+	#include "Effects/vfez_color_shine.gdshaderinc"
 #endif
 
 
@@ -306,42 +306,42 @@ group_uniforms alpha_mask;
 uniform bool use_alpha_mask = false;
 group_uniforms;
 #if defined(ALPHA_MASK)
-	#include "Effects/Shared/vfez_alpha_mask.gdshaderinc"
+	#include "Effects/vfez_alpha_mask.gdshaderinc"
 #endif
 
 group_uniforms alpha_remap;
 uniform bool use_alpha_remap = false;
 group_uniforms alpha_remap;
 #if defined(ALPHA_REMAP)
-	#include "Effects/Shared/vfez_alpha_remap.gdshaderinc"
+	#include "Effects/vfez_alpha_remap.gdshaderinc"
 #endif
 
 group_uniforms alpha_cutoff;
 uniform bool use_alpha_cutoff = false;
 group_uniforms;
 #if defined(ALPHA_CUTOFF)
-	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
+	#include "Effects/vfez_alpha_cutoff.gdshaderinc"
 #endif
 
 group_uniforms alpha_clip;
 uniform bool use_alpha_clip = false;
 group_uniforms;
 #if defined(ALPHA_CLIP)
-	#include "Effects/2D/vfez_alpha_clip.gdshaderinc"
+	#include "Effects/vfez_alpha_clip.gdshaderinc"
 #endif
 
 group_uniforms alpha_radial_clip;
 uniform bool use_alpha_radial_clip = false;
 group_uniforms;
 #if defined(ALPHA_RADIAL_CLIP)
-	#include "Effects/2D/vfez_alpha_radial_clip.gdshaderinc"
+	#include "Effects/vfez_alpha_radial_clip.gdshaderinc"
 #endif
 
 group_uniforms alpha_flicker;
 uniform bool use_alpha_flicker = false;
 group_uniforms;
 #if defined(ALPHA_FLICKER)
-	#include "Effects/2D/vfez_alpha_flicker.gdshaderinc"
+	#include "Effects/vfez_alpha_flicker.gdshaderinc"
 #endif
 
 group_uniforms particle.particle_anim;
@@ -349,7 +349,7 @@ uniform bool use_particle_anim = false;
 group_uniforms;
 
 #if defined(PARTICLE_ANIM)
-	#include "Effects/Shared/vfez_particle_anim.gdshaderinc"
+	#include "Effects/vfez_particle_anim.gdshaderinc"
 #endif
 
 void vertex() {

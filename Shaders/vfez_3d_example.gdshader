@@ -71,4 +71,4 @@ shader_type spatial;
 
 #define PARTICLE_ANIM
 
-#include "../vfez_3d_template.gdshaderinc"
+#include "vfez_3d_template.gdshaderinc"
