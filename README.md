@@ -2,7 +2,8 @@
 <img src="Images/vfez_examples.png">
 
 `VFEZ-godot` is a godot library for easy VFX generation. \
-`VFEZ-godot` provides flexible `2D` and `3D` materials that can create complex effects without writing code.
+`VFEZ-godot` provides flexible `2D` and `3D` materials that can create complex effects without writing code. \
+`VFEZ-godot` was tested in `Godot 4.3` and in `Godot 4.4`.
 
 ## Quickstart
 To get started with `VFEZ-godot` simply clone the repo inside your project and then create a new `Material`.
