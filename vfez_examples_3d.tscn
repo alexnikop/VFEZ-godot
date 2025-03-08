@@ -1,6 +1,7 @@
 [gd_scene load_steps=52 format=3 uid="uid://cf0wi8xo4rxpa"]
 
-[ext_resource type="Script" uid="uid://ebeep2fti44p" path="res://Addons/VFEZ-godot-private/VFEZ-godot/vfez_material_3d.gd" id="1_o2hx6"]
+[ext_resource type="Script" path="res://addons/VFEZ-godot/vfez_material_3d.gd" id="1_o2hx6"]
+
 
 [sub_resource type="Shader" id="Shader_g27hw"]
 resource_name = "VFEZ3DPreview"
