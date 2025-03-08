@@ -100,14 +100,14 @@ uniform float shape1_distortion_amount: hint_range(0.0, 10) = 0.0;
 uniform vec2 shape1_distortion_speed = vec2(0.1);
 group_uniforms;
 
-group_uniforms shape1.screenspace_uv;
-uniform bool shape1_use_screenspace_uv;
-group_uniforms;
-
 group_uniforms shape1.polar_uv;
 uniform bool shape1_use_polar_uv = false;
 uniform vec2 shape1_polar_uv_center = vec2(0.5);
 uniform bool shape1_distortion_polar_uvs = false;
+group_uniforms;
+
+group_uniforms shape1.screenspace_uv;
+uniform bool shape1_use_screenspace_uv;
 group_uniforms;
 
 group_uniforms shape2;
@@ -139,14 +139,14 @@ group_uniforms;
 	uniform vec2 shape2_distortion_speed = vec2(0.1);
 	group_uniforms;
 
-	group_uniforms shape2.screenspace_uv;
-	uniform bool shape2_use_screenspace_uv;
-	group_uniforms;
-
 	group_uniforms shape2.polar_uv;
 	uniform bool shape2_use_polar_uv = false;
 	uniform vec2 shape2_polar_uv_center = vec2(0.5);
 	uniform bool shape2_distortion_polar_uvs = false;
+	group_uniforms;
+
+	group_uniforms shape2.screenspace_uv;
+	uniform bool shape2_use_screenspace_uv;
 	group_uniforms;
 #endif
 
@@ -179,14 +179,14 @@ group_uniforms;
 	uniform vec2 shape3_distortion_speed = vec2(0.1);
 	group_uniforms;
 
-	group_uniforms shape3.screenspace_uv;
-	uniform bool shape3_use_screenspace_uv;
-	group_uniforms;
-
 	group_uniforms shape3.polar_uv;
 	uniform bool shape3_use_polar_uv = false;
 	uniform vec2 shape3_polar_uv_center = vec2(0.5);
 	uniform bool shape3_distortion_polar_uvs = false;
+	group_uniforms;
+
+	group_uniforms shape3.screenspace_uv;
+	uniform bool shape3_use_screenspace_uv;
 	group_uniforms;
 #endif
 
@@ -205,84 +205,6 @@ group_uniforms combine_shapes;
 	uniform float shape3_alpha_weight: hint_range(0.0, 5.) = 1;
 #endif
 group_uniforms;
-
-group_uniforms color_face_tint;
-	uniform bool use_color_face_tint = false;
-group_uniforms;
-#if defined(COLOR_FACE_TINT)
-	#include "Effects/3D/vfez_color_face_tint.gdshaderinc"
-#endif
-
-group_uniforms color_grading;
-uniform bool use_color_grading = false;
-group_uniforms;
-#if defined(COLOR_GRADING)
-	#include "Effects/Shared/vfez_color_grading.gdshaderinc"
-#endif
-
-
-group_uniforms color_ramp;
-uniform bool use_color_ramp = false;
-group_uniforms;
-#if defined(COLOR_RAMP)
-	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
-#endif
-
-group_uniforms color_posterize;
-uniform bool use_color_posterize = false;
-group_uniforms;
-#if defined(COLOR_POSTERIZE)
-	#include "Effects/Shared/vfez_color_posterize.gdshaderinc"
-#endif
-
-group_uniforms color_rim;
-uniform bool use_color_rim = false;
-group_uniforms;
-#if defined(COLOR_RIM)
-	#include "Effects/3D/vfez_color_rim.gdshaderinc"
-#endif
-
-group_uniforms color_glow;
-uniform bool use_color_glow = false;
-group_uniforms;
-#if defined(COLOR_GLOW)
-	#include "Effects/Shared/vfez_color_glow.gdshaderinc"
-#endif
-
-group_uniforms color_hsv_shift;
-uniform bool use_color_hsv_shift = false;
-group_uniforms;
-#if defined(COLOR_HSV_SHIFT)
-	#include "Effects/Shared/vfez_hsv_shift.gdshaderinc"
-#endif
-
-group_uniforms alpha_disolve;
-uniform bool use_alpha_disolve = false;
-group_uniforms;
-#if defined(ALPHA_DISOLVE)
-	#include "Effects/Shared/vfez_alpha_disolve.gdshaderinc"
-#endif
-
-group_uniforms alpha_mask;
-uniform bool use_alpha_mask = false;
-group_uniforms;
-#if defined(ALPHA_MASK)
-	#include "Effects/Shared/vfez_alpha_mask.gdshaderinc"
-#endif
-
-group_uniforms alpha_remap;
-uniform bool use_alpha_remap = false;
-group_uniforms;
-#if defined(ALPHA_REMAP)
-	#include "Effects/Shared/vfez_alpha_remap.gdshaderinc"
-#endif
-
-group_uniforms alpha_cutoff;
-uniform bool use_alpha_cutoff = false;
-group_uniforms;
-#if defined(ALPHA_CUTOFF)
-	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
-#endif
 
 group_uniforms uv_pixelate;
 uniform bool use_uv_pixelate = false;
@@ -336,6 +258,84 @@ uniform bool use_uv_global_distortion = false;
 	uniform float uv_global_distortion_amount: hint_range(0.0, 10.0) = 0.5;
 #endif
 group_uniforms;
+
+group_uniforms alpha_disolve;
+uniform bool use_alpha_disolve = false;
+group_uniforms;
+#if defined(ALPHA_DISOLVE)
+	#include "Effects/Shared/vfez_alpha_disolve.gdshaderinc"
+#endif
+
+group_uniforms color_face_tint;
+	uniform bool use_color_face_tint = false;
+group_uniforms;
+#if defined(COLOR_FACE_TINT)
+	#include "Effects/3D/vfez_color_face_tint.gdshaderinc"
+#endif
+
+group_uniforms color_toning;
+uniform bool use_color_toning = false;
+group_uniforms;
+#if defined(COLOR_TONING)
+	#include "Effects/Shared/vfez_color_toning.gdshaderinc"
+#endif
+
+group_uniforms color_ramp;
+uniform bool use_color_ramp = false;
+group_uniforms;
+#if defined(COLOR_RAMP)
+	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
+#endif
+
+group_uniforms color_posterize;
+uniform bool use_color_posterize = false;
+group_uniforms;
+#if defined(COLOR_POSTERIZE)
+	#include "Effects/Shared/vfez_color_posterize.gdshaderinc"
+#endif
+
+group_uniforms color_rim;
+uniform bool use_color_rim = false;
+group_uniforms;
+#if defined(COLOR_RIM)
+	#include "Effects/3D/vfez_color_rim.gdshaderinc"
+#endif
+
+group_uniforms color_glow;
+uniform bool use_color_glow = false;
+group_uniforms;
+#if defined(COLOR_GLOW)
+	#include "Effects/Shared/vfez_color_glow.gdshaderinc"
+#endif
+
+group_uniforms color_hsv_shift;
+uniform bool use_color_hsv_shift = false;
+group_uniforms;
+#if defined(COLOR_HSV_SHIFT)
+	#include "Effects/Shared/vfez_hsv_shift.gdshaderinc"
+#endif
+
+group_uniforms alpha_mask;
+uniform bool use_alpha_mask = false;
+group_uniforms;
+#if defined(ALPHA_MASK)
+	#include "Effects/Shared/vfez_alpha_mask.gdshaderinc"
+#endif
+
+group_uniforms alpha_remap;
+uniform bool use_alpha_remap = false;
+group_uniforms;
+#if defined(ALPHA_REMAP)
+	#include "Effects/Shared/vfez_alpha_remap.gdshaderinc"
+#endif
+
+group_uniforms alpha_cutoff;
+uniform bool use_alpha_cutoff = false;
+group_uniforms;
+#if defined(ALPHA_CUTOFF)
+	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
+#endif
+
 
 group_uniforms vertex_offset;
 uniform bool use_vertex_offset = false;
@@ -830,10 +830,10 @@ void fragment() {
 	#endif
 
 	// apply color grading if defined
-	#if defined(COLOR_GRADING)
-		if (use_color_grading)
+	#if defined(COLOR_TONING)
+		if (use_color_toning)
 		{
-			color.rgb = color_grading(color);
+			color.rgb = color_toning(color);
 		}
 	#endif
 

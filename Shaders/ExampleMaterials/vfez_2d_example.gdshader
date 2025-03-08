@@ -18,6 +18,7 @@ shader_type canvas_item;
 #define COLOR_GRADING
 #define COLOR_RAMP
 #define COLOR_CHANGE
+#define COLOR_GHOST
 #define COLOR_POSTERIZE
 #define COLOR_RIM
 #define COLOR_GLOW
@@ -46,6 +47,7 @@ shader_type canvas_item;
 #define UV_GLOBAL_DISTORTION
 #define UV_PINCH
 #define UV_WIND
+#define UV_WRAP
 
 #define VERTEX_OFFSET
 #define VERTEX_EXPAND

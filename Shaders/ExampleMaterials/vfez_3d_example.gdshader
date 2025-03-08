@@ -37,13 +37,22 @@ shader_type spatial;
 
 //#define NO_DEPTH_TEST
 
-//#define PARTICLE_OPTIONS
 //#define PARTICLE_TRAILS
 //#define PARTICLE_ANIM
 
 // enable more shapes to blend more textures
 #define SHAPE2
 #define SHAPE3
+
+#define UV_PIXELATE
+#define UV_TWIST
+#define UV_HANDRAWN
+#define UV_SHAKE
+#define UV_WAVE
+#define UV_ROUND_WAVE
+#define UV_GLOBAL_DISTORTION
+
+#define ALPHA_DISOLVE
 
 #define COLOR_FACE_TINT
 #define COLOR_GRADING
@@ -53,18 +62,9 @@ shader_type spatial;
 #define COLOR_GLOW
 #define COLOR_HSV_SHIFT
 
-#define ALPHA_DISOLVE
 #define ALPHA_MASK
 #define ALPHA_REMAP
 #define ALPHA_CUTOFF
-
-#define UV_PIXELATE
-#define UV_TWIST
-#define UV_HANDRAWN
-#define UV_SHAKE
-#define UV_WAVE
-#define UV_ROUND_WAVE
-#define UV_GLOBAL_DISTORTION
 
 #define VERTEX_OFFSET
 #define VERTEX_EXPAND

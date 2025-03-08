@@ -6,7 +6,7 @@
 group_uniforms outline;
 uniform vec3 outline_color: source_color;
 uniform float outline_alpha: hint_range(0.0, 1.0) = 1.0;
-uniform float outline_glow;
+uniform float outline_glow: hint_range(1., 100, 1.) = 1.0;
 uniform float outline_width;
 uniform bool only_render_outline;
 group_uniforms;

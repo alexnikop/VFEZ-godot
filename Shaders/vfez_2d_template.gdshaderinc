@@ -30,7 +30,6 @@ uniform vec2 texture_scale = vec2(1.);
 uniform vec2 texture_offset = vec2(0.);
 uniform vec2 texture_scroll_speed = vec2(0.);
 uniform bool replicate_on_scale = true;
-uniform bool apply_scale_offset_after_uv_effects;
 uniform vec4 texture_color: source_color = vec4(1.);
 uniform float texture_alpha: hint_range(0.0, 1.0) = 1.;
 uniform bool texture_red_as_alpha = false;
@@ -40,122 +39,15 @@ uniform float contrast: hint_range(0.0, 10) = 1.;
 uniform float brightness: hint_range(-1., 1.) = 0.;
 group_uniforms;
 
-group_uniforms outline;
-uniform bool use_outline;
-group_uniforms;
-#if defined(OUTLINE)
-	#include "Effects/2D/vfez_outline.gdshaderinc"
-#endif
-
-group_uniforms outline_inner;
-uniform bool use_outline_inner;
-group_uniforms;
-#if defined(OUTLINE_INNER)
-	#include "Effects/2D/vfez_outline_inner.gdshaderinc"
-#endif
-
 group_uniforms rect_size;
 uniform float rect_size_ratio: hint_range(1.0, 5.0) = 1.0;
 group_uniforms;
 
-group_uniforms color_grading;
-uniform bool use_color_grading = false;
-group_uniforms;
-#if defined(COLOR_GRADING)
-	#include "Effects/Shared/vfez_color_grading.gdshaderinc"
-#endif
-
-group_uniforms color_ramp;
-uniform bool use_color_ramp = false;
-group_uniforms;
-#if defined(COLOR_RAMP)
-	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
-#endif
-
-group_uniforms color_change;
-uniform bool use_color_change = false;
-group_uniforms;
-#if defined(COLOR_CHANGE)
-	#include "Effects/2D/vfez_color_change.gdshaderinc"
-#endif
-
-group_uniforms color_posterize;
-uniform bool use_color_posterize = false;
-group_uniforms;
-#if defined(COLOR_POSTERIZE)
-	#include "Effects/Shared/vfez_color_posterize.gdshaderinc"
-#endif
-
-group_uniforms color_glow;
-uniform bool use_color_glow = false;
-group_uniforms;
-#if defined(COLOR_GLOW)
-	#include "Effects/Shared/vfez_color_glow.gdshaderinc"
-#endif
-
-group_uniforms color_hsv_shift;
-uniform bool use_color_hsv_shift = false;
-group_uniforms;
-#if defined(COLOR_HSV_SHIFT)
-	#include "Effects/Shared/vfez_hsv_shift.gdshaderinc"
-#endif
-
-group_uniforms color_shadow;
-uniform bool use_color_shadow = false;
-group_uniforms;
-#if defined(COLOR_SHADOW)
-	#include "Effects/2D/vfez_color_shadow.gdshaderinc"
-#endif
-
-
-group_uniforms alpha_disolve;
-uniform bool use_alpha_disolve = false;
-group_uniforms;
-#if defined(ALPHA_DISOLVE)
-	#include "Effects/Shared/vfez_alpha_disolve.gdshaderinc"
-#endif
-
-
-group_uniforms alpha_mask;
-uniform bool use_alpha_mask = false;
-group_uniforms;
-#if defined(ALPHA_MASK)
-	#include "Effects/Shared/vfez_alpha_mask.gdshaderinc"
-#endif
-
-group_uniforms alpha_remap;
-uniform bool use_alpha_remap = false;
-group_uniforms alpha_remap;
-#if defined(ALPHA_REMAP)
-	#include "Effects/Shared/vfez_alpha_remap.gdshaderinc"
-#endif
-
-group_uniforms alpha_cutoff;
-uniform bool use_alpha_cutoff = false;
-group_uniforms;
-#if defined(ALPHA_CUTOFF)
-	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
-#endif
-
-group_uniforms alpha_clip;
-uniform bool use_alpha_clip = false;
-group_uniforms;
-#if defined(ALPHA_CLIP)
-	#include "Effects/2D/vfez_alpha_clip.gdshaderinc"
-#endif
-
-group_uniforms alpha_radial_clip;
-uniform bool use_alpha_radial_clip = false;
-group_uniforms;
-#if defined(ALPHA_RADIAL_CLIP)
-	#include "Effects/2D/vfez_alpha_radial_clip.gdshaderinc"
-#endif
-
-group_uniforms uv_rotation;
-uniform bool use_uv_rotation;
-#if defined(UV_ROTATION)
-	uniform float uv_rotation_offset: hint_range(0.0, 6.28318530718) = 0.;
-	uniform float uv_rotation_speed = 0.;
+group_uniforms uv_polar;
+uniform bool use_uv_polar = false;
+#if defined(UV_POLAR)
+	uniform vec2 uv_polar_center = vec2(0.5);
+	uniform bool distortion_uses_uv_polar = false;
 #endif
 group_uniforms;
 
@@ -170,11 +62,11 @@ uniform bool use_uv_distortion;
 #endif
 group_uniforms;
 
-group_uniforms uv_polar;
-uniform bool use_uv_polar = false;
-#if defined(UV_POLAR)
-	uniform vec2 uv_polar_center = vec2(0.5);
-	uniform bool distortion_uses_uv_polar = false;
+group_uniforms uv_rotation;
+uniform bool use_uv_rotation;
+#if defined(UV_ROTATION)
+	uniform float uv_rotation_offset: hint_range(0.0, 6.28318530718) = 0.;
+	uniform float uv_rotation_speed = 0.;
 #endif
 group_uniforms;
 
@@ -220,14 +112,12 @@ group_uniforms;
 	#include "Effects/Shared/vfez_uv_shake.gdshaderinc"
 #endif
 
-
 group_uniforms uv_wave;
 uniform bool use_uv_wave = false;
 group_uniforms;
 #if defined(UV_WAVE)
 	#include "Effects/Shared/vfez_uv_wave.gdshaderinc"
 #endif
-
 
 group_uniforms uv_round_wave;
 uniform bool use_uv_round_wave = false;
@@ -241,6 +131,217 @@ uniform bool use_uv_wind = false;
 group_uniforms;
 #if defined(UV_WIND)
 	#include "Effects/2D/vfez_uv_wind.gdshaderinc"
+#endif
+
+group_uniforms uv_wrap;
+uniform bool use_uv_wrap = false;
+group_uniforms;
+#if defined(UV_WRAP)
+	#include "Effects/2D/vfez_uv_wrap.gdshaderinc"
+#endif
+
+group_uniforms uv_zoom;
+uniform bool use_uv_zoom = false;
+group_uniforms;
+#if defined(UV_ZOOM)
+	#include "Effects/2D/vfez_uv_zoom.gdshaderinc"
+#endif
+
+group_uniforms color_single;
+uniform bool use_color_single;
+group_uniforms;
+#if defined(COLOR_SINGLE)
+	#include "Effects/2D/vfez_color_single.gdshaderinc"
+#endif
+
+group_uniforms color_overlay_texture;
+uniform bool use_color_overlay_texture;
+group_uniforms;
+#if defined(COLOR_OVERLAY_TEXTURE)
+	#include "Effects/2D/vfez_color_overlay_texture.gdshaderinc"
+#endif
+
+group_uniforms outline;
+uniform bool use_outline;
+group_uniforms;
+#if defined(OUTLINE)
+	#include "Effects/2D/vfez_outline.gdshaderinc"
+#endif
+
+group_uniforms outline_inner;
+uniform bool use_outline_inner;
+group_uniforms;
+#if defined(OUTLINE_INNER)
+	#include "Effects/2D/vfez_outline_inner.gdshaderinc"
+#endif
+
+group_uniforms alpha_disolve;
+uniform bool use_alpha_disolve = false;
+group_uniforms;
+#if defined(ALPHA_DISOLVE)
+	#include "Effects/Shared/vfez_alpha_disolve.gdshaderinc"
+#endif
+
+group_uniforms chromatic_aberration;
+uniform bool use_chromatic_aberration;
+group_uniforms;
+#if defined(CHROMATIC_ABERRATION)
+	#include "Effects/2D/vfez_chromatic_aberration.gdshaderinc"
+#endif
+
+group_uniforms motion_blur;
+uniform bool use_motion_blur = false;
+group_uniforms;
+#if defined(MOTION_BLUR)
+	#include "Effects/2D/vfez_motion_blur.gdshaderinc"
+#endif
+
+group_uniforms glitch;
+uniform bool use_glitch = false;
+group_uniforms;
+#if defined(GLITCH)
+	#include "Effects/2D/vfez_glitch.gdshaderinc"
+#endif
+
+group_uniforms color_gradient;
+uniform bool use_color_gradient = false;
+group_uniforms;
+#if defined(COLOR_GRADIENT)
+	#include "Effects/2D/vfez_color_gradient.gdshaderinc"
+#endif
+
+group_uniforms color_radial_gradient;
+uniform bool use_color_radial_gradient = false;
+group_uniforms;
+#if defined(COLOR_RADIAL_GRADIENT)
+	#include "Effects/2D/vfez_color_radial_gradient.gdshaderinc"
+#endif
+
+group_uniforms color_toning;
+uniform bool use_color_toning = false;
+group_uniforms;
+#if defined(COLOR_TONING)
+	#include "Effects/Shared/vfez_color_toning.gdshaderinc"
+#endif
+
+group_uniforms color_ramp;
+uniform bool use_color_ramp = false;
+group_uniforms;
+#if defined(COLOR_RAMP)
+	#include "Effects/Shared/vfez_color_ramp.gdshaderinc"
+#endif
+
+group_uniforms color_change;
+uniform bool use_color_change = false;
+group_uniforms;
+#if defined(COLOR_CHANGE)
+	#include "Effects/2D/vfez_color_change.gdshaderinc"
+#endif
+
+group_uniforms color_ghost;
+uniform bool use_color_ghost = false;
+group_uniforms;
+#if defined(COLOR_GHOST)
+	#include "Effects/2D/vfez_color_ghost.gdshaderinc"
+#endif
+
+group_uniforms color_hologram;
+uniform bool use_color_hologram = false;
+group_uniforms;
+#if defined(COLOR_HOLOGRAM)
+	#include "Effects/2D/vfez_color_hologram.gdshaderinc"
+#endif
+
+group_uniforms color_posterize;
+uniform bool use_color_posterize = false;
+group_uniforms;
+#if defined(COLOR_POSTERIZE)
+	#include "Effects/Shared/vfez_color_posterize.gdshaderinc"
+#endif
+
+group_uniforms color_negative;
+uniform bool use_color_negative;
+group_uniforms;
+#if defined(COLOR_NEGATIVE)
+	#include "Effects/2D/vfez_color_negative.gdshaderinc"
+#endif
+
+group_uniforms color_glow;
+uniform bool use_color_glow = false;
+group_uniforms;
+#if defined(COLOR_GLOW)
+	#include "Effects/Shared/vfez_color_glow.gdshaderinc"
+#endif
+
+group_uniforms color_hsv_shift;
+uniform bool use_color_hsv_shift = false;
+group_uniforms;
+#if defined(COLOR_HSV_SHIFT)
+	#include "Effects/Shared/vfez_hsv_shift.gdshaderinc"
+#endif
+
+group_uniforms color_shadow;
+uniform bool use_color_shadow = false;
+group_uniforms;
+#if defined(COLOR_SHADOW)
+	#include "Effects/2D/vfez_color_shadow.gdshaderinc"
+#endif
+
+group_uniforms color_greyscale;
+uniform bool use_color_greyscale= false;
+group_uniforms;
+#if defined(COLOR_GREYSCALE)
+	#include "Effects/2D/vfez_color_greyscale.gdshaderinc"
+#endif
+
+group_uniforms color_shine;
+uniform bool use_color_shine= false;
+group_uniforms;
+#if defined(COLOR_SHINE)
+	#include "Effects/2D/vfez_color_shine.gdshaderinc"
+#endif
+
+
+group_uniforms alpha_mask;
+uniform bool use_alpha_mask = false;
+group_uniforms;
+#if defined(ALPHA_MASK)
+	#include "Effects/Shared/vfez_alpha_mask.gdshaderinc"
+#endif
+
+group_uniforms alpha_remap;
+uniform bool use_alpha_remap = false;
+group_uniforms alpha_remap;
+#if defined(ALPHA_REMAP)
+	#include "Effects/Shared/vfez_alpha_remap.gdshaderinc"
+#endif
+
+group_uniforms alpha_cutoff;
+uniform bool use_alpha_cutoff = false;
+group_uniforms;
+#if defined(ALPHA_CUTOFF)
+	#include "Effects/Shared/vfez_alpha_cutoff.gdshaderinc"
+#endif
+
+group_uniforms alpha_clip;
+uniform bool use_alpha_clip = false;
+group_uniforms;
+#if defined(ALPHA_CLIP)
+	#include "Effects/2D/vfez_alpha_clip.gdshaderinc"
+#endif
+
+group_uniforms alpha_radial_clip;
+uniform bool use_alpha_radial_clip = false;
+group_uniforms;
+#if defined(ALPHA_RADIAL_CLIP)
+	#include "Effects/2D/vfez_alpha_radial_clip.gdshaderinc"
+#endif
+
+group_uniforms alpha_flicker;
+uniform bool use_alpha_flicker = false;
+group_uniforms;
+#if defined(ALPHA_FLICKER)
+	#include "Effects/2D/vfez_alpha_flicker.gdshaderinc"
 #endif
 
 group_uniforms particle.particle_anim;
@@ -263,24 +364,27 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 baseUV = UV;
 
-	baseUV = baseUV * rect_size_ratio + vec2(-rect_size_ratio * 0.5 + 0.5);
+	vec2 startUV = UV * rect_size_ratio + vec2(-rect_size_ratio * 0.5 + 0.5);
+	vec2 baseUV = startUV;
 
-	if (!apply_scale_offset_after_uv_effects)
-		baseUV = transform_uv(
-						baseUV,
-						texture_scale,
-						texture_offset,
-						replicate_on_scale);
+	#if defined(UV_POLAR)
+		if (use_uv_polar)
+		{
+			baseUV = uv_polar(baseUV, uv_polar_center);
+		}
+	#endif
+
+	baseUV = transform_uv(
+					baseUV,
+					texture_scale,
+					texture_offset,
+					replicate_on_scale);
 
 	#if defined(UV_DISTORTION)
 		if (use_uv_distortion && distortion_amount > 0.)
 		{
-			vec2 distort_uvs = baseUV;
-
-			//distort_uvs
-			vec2 distortionUV = baseUV;
+			vec2 distortionUV = startUV;
 			distortionUV = transform_uv(
 							distortionUV,
 							distortion_tex_scale,
@@ -307,13 +411,6 @@ void fragment() {
 			texture_scale,
 			texture_offset);
 	}
-	#endif
-	
-	#if defined(UV_POLAR)
-		if (use_uv_polar)
-		{
-			baseUV = uv_polar(baseUV, uv_polar_center);
-		}
 	#endif
 	
 	#if defined(UV_PIXELATE)
@@ -382,14 +479,21 @@ void fragment() {
 			baseUV = uv_wind(baseUV);
 		}
 	#endif
-	
-	if (apply_scale_offset_after_uv_effects)
-		baseUV = transform_uv(
-						baseUV,
-						texture_scale,
-						texture_offset,
-						true);
 
+	#if defined(UV_WRAP)
+		if (use_uv_wrap)
+		{
+			baseUV = uv_wrap(baseUV, texture_scale);
+		}
+	#endif
+
+	#if defined(UV_ZOOM)
+		if (use_uv_zoom)
+		{
+			baseUV = uv_zoom(baseUV, texture_scale);
+		}
+	#endif
+	
 	vec4 color = sample_texture_with_scroll(
 			TEXTURE,
 			baseUV,
@@ -440,7 +544,21 @@ void fragment() {
 	{
 		color.rgb *= color.a;
 	}
+	
+	#if defined(COLOR_SINGLE)
+		if (use_color_single)
+		{
+			color.rgb = color_single(color.rgb);
+		}
+	#endif
 
+	#if defined(COLOR_OVERLAY_TEXTURE)
+		if (use_color_overlay_texture)
+		{
+			color = color_overlay_texture(color, baseUV);
+		}
+	#endif
+	
 	#if defined(OUTLINE)
 		if (use_outline)
 		{
@@ -462,18 +580,48 @@ void fragment() {
 		}
 	#endif
 
-	#if defined(ALPHA_MASK)
-		if (use_alpha_mask)
+	#if defined(CHROMATIC_ABERRATION)
+		if (use_chromatic_aberration)
 		{
-			color.a = alpha_mask(color.a, baseUV, true);
+			color = chromatic_aberration(color, baseUV, TEXTURE);
 		}
 	#endif
-
-	// apply color grading if defined
-	#if defined(COLOR_GRADING)
-		if (use_color_grading)
+	
+	#if defined(MOTION_BLUR)
+		if (use_motion_blur)
 		{
-			color.rgb = color_grading(color);
+			color.rgb = motion_blur(color.rgb, baseUV, TEXTURE);
+		}
+	#endif
+	
+		#if defined(GLITCH)
+		if (use_glitch)
+		{
+			color.rgb = glitch(color.rgb, baseUV, TEXTURE);
+		}
+	#endif
+	
+	#if defined(COLOR_GRADIENT)
+		if (use_color_gradient)
+		{
+			color.rgba = color_gradient(color, baseUV, texture_scale);
+		}
+	#endif
+	
+	#if defined(COLOR_RADIAL_GRADIENT)
+	
+		if (use_color_radial_gradient)
+		{
+			vec2 main_tex_size = vec2(textureSize(TEXTURE, 0));
+			color.rgba = color_radial_gradient(color, baseUV, texture_scale, main_tex_size);	
+		}
+	#endif
+	
+	// apply color grading if defined
+	#if defined(COLOR_TONING)
+		if (use_color_toning)
+		{
+			color.rgb = color_toning(color);
 		}
 	#endif
 
@@ -491,6 +639,20 @@ void fragment() {
 			color.rgb = color_change(color.rgb);
 		}
 	#endif
+
+	#if defined(COLOR_GHOST)
+		if (use_color_ghost)
+		{
+			color = color_ghost(color);
+		}
+	#endif
+
+	#if defined(COLOR_HOLOGRAM)
+		if (use_color_hologram)
+		{
+			color = color_hologram(color, baseUV);
+		}
+	#endif
 	
 	#if defined(COLOR_POSTERIZE)
 		if (use_color_posterize)
@@ -499,6 +661,13 @@ void fragment() {
 		}
 	#endif
 
+	#if defined(COLOR_NEGATIVE)
+		if (use_color_negative)
+		{
+			color.rgb = color_negative(color.rgb);
+		}
+	#endif
+	
 	#if defined(COLOR_GLOW)
 		if (use_color_glow)
 		{
@@ -517,6 +686,27 @@ void fragment() {
 		if (use_color_shadow)
 		{
 			color = shadow(color, TEXTURE, baseUV);
+		}
+	#endif
+
+	#if defined(COLOR_GREYSCALE)
+		if (use_color_greyscale)
+		{
+			color.rgb = color_greyscale(color.rgb);
+		}
+	#endif
+
+	#if defined(COLOR_SHINE)
+		if (use_color_shine)
+		{
+			color = color_shine(color, baseUV);
+		}
+	#endif
+	
+	#if defined(ALPHA_MASK)
+		if (use_alpha_mask)
+		{
+			color.a = alpha_mask(color.a, baseUV, true);
 		}
 	#endif
 	
@@ -548,6 +738,12 @@ void fragment() {
 		}
 	#endif
 	
+	#if defined(ALPHA_FLICKER)
+		if (use_alpha_flicker)
+		{
+			color.a = alpha_flicker(color.a);
+		}
+	#endif
 	
 	color.a *= texture_alpha;
 

@@ -37,13 +37,19 @@ vec2 uv_polar(vec2 uv, vec2 center)
 	return polarUV;
 }
 
+vec2 rotate_vec2(vec2 vector, float angle)
+{
+	float cosAngle = cos(angle);
+	float sinAngle = sin(angle);
+	vector = mat2(vec2(cosAngle, -sinAngle), vec2(sinAngle, cosAngle)) * vector;
+	return vector;
+}
+
 vec2 rotate_uvs(vec2 uv, float rotation, vec2 scale, vec2 offset)
 {
 	vec2 center = vec2(0.5 * scale.x + offset.x, 0.5 * scale.y + offset.y);
-	float cosAngle = cos(rotation);
-	float sinAngle = sin(rotation);
 	uv -= center;
-	uv = mat2(vec2(cosAngle, -sinAngle), vec2(sinAngle, cosAngle)) *  uv;
+	uv = rotate_vec2(uv, rotation);
 	uv += center;
 	return uv;
 }
@@ -59,6 +65,10 @@ vec4 sample_texture_with_scroll(sampler2D tex, vec2 uv, vec2 scroll_speed, float
 
 float rand(vec2 seed, float offset) {
 	return mod(fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453) + offset, 1.0);
+}
+
+float rand_uncapped(vec2 seed, float offset) {
+	return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453) + offset;
 }
 
 float rand2(vec2 seed, float offset, float time) {
