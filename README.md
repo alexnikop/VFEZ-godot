@@ -1,16 +1,18 @@
 # VFEZ-godot
+<img src="Images/3d_effects_examples.png">
 
-![screenshot](Images/3d_effects_examples.png)
+`VFEZ-godot` is a godot library for easy VFX generation. \
+`VFEZ-godot` provides flexible `2D` and `3D` materials that can create complex effects without writing code.
 
-VFEZ-godot includes a flexible godot material for easy 3D VFX generation. VFEZ-godot was tested in Godot 4.3.
+## Quickstart
+To get started with `VFEZ-godot` simply clone it inside your project and then create a new Material. \
+To create a 3D VFX, create a `VFEZMaterial3D` in a `MeshInstance3D` node. \
+To create a 2D VFX, create a `VFEZMaterial2D` in a `Sprite2D` or `TextureRect` node.
+`VFEZ-godot` contains a big library of shader effects that can be stacked easily together.
 
-To create a `VFEZ-material` simply clone the repository inside your project, then create a new material on a `MeshInstance3D` and select `New VFEZMaterial`.
+<img src="Images/vfez_materials.png" width="400">
 
-![screenshot](Images/vfez_materials.png)
-
-A `VFEZMaterial` contains various effects that can be stacked easily without writing a single line of code. Multiple shapes can also be stacked to create complex effects.
-
-![screenshot](Images/vfez_sample_effects.png)
+<img src="Images/vfez_sample_effects.png" width="400">
 
 ## Technical details
 A `VFEZMaterial` dynamically recompiles the `vfez_template.gdshader` every time an effect is enabled or disabled. That way the resulting material does not include excess code logic and is performant. Every `VFEZMaterial` includes a copy of the original template shader. By selecting `Recompile Code Source` at the top of the material, you can decide whether every new recompilation will use the material's current clone or the original template as a source. 
