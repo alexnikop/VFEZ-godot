@@ -55,7 +55,7 @@ shader_type spatial;
 #define ALPHA_DISOLVE
 
 #define COLOR_FACE_TINT
-#define COLOR_GRADING
+#define COLOR_TONING
 #define COLOR_RAMP
 #define COLOR_POSTERIZE
 #define COLOR_RIM
@@ -68,7 +68,5 @@ shader_type spatial;
 
 #define VERTEX_OFFSET
 #define VERTEX_EXPAND
-
-#define PARTICLE_ANIM
 
 #include "vfez_3d_template.gdshaderinc"
