@@ -25,5 +25,5 @@ To get started with `VFEZ-godot` simply clone the repo inside your project and t
 * Add more usage tutorials
 
 ## Community Notes
-* Contributions are welcome.
+* Contributions are welcome (especially new effects to enchance the library!).
 * If you encounter any bug let me know so I can fix it.
