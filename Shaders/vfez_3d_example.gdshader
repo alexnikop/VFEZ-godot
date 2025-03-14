@@ -28,7 +28,7 @@ shader_type spatial;
 //#define SPECULAR_TOON
 //#define SPECULAR_DISABLED
 
-//#define UNSHADED
+#define UNSHADED
 
 //#define BILLBOARD_ENABLED
 //#define BILLBOARD_Y
@@ -68,5 +68,7 @@ shader_type spatial;
 
 #define VERTEX_OFFSET
 #define VERTEX_EXPAND
+
+#define SHADE_NORMAL_MAP
 
 #include "vfez_3d_template.gdshaderinc"

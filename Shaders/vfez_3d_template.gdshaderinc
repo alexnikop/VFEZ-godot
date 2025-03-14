@@ -345,7 +345,21 @@ group_uniforms;
 	group_uniforms;
 #endif
 
+#if not defined(UNSHADED)
+	group_uniforms shade_normal_map;
+	uniform bool use_shade_normal_map = false;
+	group_uniforms;
+#endif
 
+#if defined(SHADE_NORMAL_MAP) && not defined(UNSHADED)
+	group_uniforms shade_normal_map;
+	uniform sampler2D shade_normal_map_texture: hint_normal;
+	uniform vec2 shade_normal_map_texture_scale = vec2(1.);
+	uniform vec2 shade_normal_map_texture_offset = vec2(0.);
+	uniform float shade_normal_map_depth: hint_range(0., 10.) = 1.;
+	group_uniforms;
+#endif
+	
 group_uniforms vertex_offset;
 uniform bool use_vertex_offset = false;
 group_uniforms;
@@ -921,6 +935,19 @@ void fragment() {
 	ALPHA = color.a;
 	
 	#if defined(ALPHA_SCISSOR)
-		ALPHA_SCISSOR_THRESHOLD = alpha_scissor_thres;
+		if (use_alpha_scissor)
+		{
+			ALPHA_SCISSOR_THRESHOLD = alpha_scissor_thres;	
+		}
+	#endif
+	
+	#if defined(SHADE_NORMAL_MAP) && not defined(UNSHADED)
+		if (use_shade_normal_map)
+		{
+			vec2 normalUV = transform_uv(baseUV, shade_normal_map_texture_scale, shade_normal_map_texture_offset, false);
+			vec3 normal = texture(shade_normal_map_texture, normalUV).rgb;
+			NORMAL_MAP = normal;
+			NORMAL_MAP_DEPTH = shade_normal_map_depth;	
+		}
 	#endif
 }
