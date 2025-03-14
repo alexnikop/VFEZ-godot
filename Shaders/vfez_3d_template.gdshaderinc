@@ -336,6 +336,15 @@ group_uniforms;
 	#include "Effects/vfez_alpha_cutoff.gdshaderinc"
 #endif
 
+group_uniforms alpha_scissor;
+uniform bool use_alpha_scissor = false;
+group_uniforms;
+#if defined(ALPHA_SCISSOR)
+	group_uniforms alpha_scissor;
+	uniform float alpha_scissor_thres: hint_range(0., 1.) = 0.;
+	group_uniforms;
+#endif
+
 
 group_uniforms vertex_offset;
 uniform bool use_vertex_offset = false;
@@ -910,4 +919,8 @@ void fragment() {
 
 	ALBEDO = color.rgb;
 	ALPHA = color.a;
+	
+	#if defined(ALPHA_SCISSOR)
+		ALPHA_SCISSOR_THRESHOLD = alpha_scissor_thres;
+	#endif
 }
