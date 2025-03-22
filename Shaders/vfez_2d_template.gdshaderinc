@@ -352,6 +352,8 @@ group_uniforms;
 	#include "Effects/vfez_particle_anim.gdshaderinc"
 #endif
 
+varying vec4 modulate_color;
+
 void vertex() {
 	#if defined(PARTICLE_ANIM)
 		if (use_particle_anim)
@@ -361,6 +363,7 @@ void vertex() {
 	#endif
 
 	VERTEX += VERTEX * (rect_size_ratio - 1.0);
+	modulate_color = COLOR;
 }
 
 void fragment() {
@@ -502,11 +505,11 @@ void fragment() {
 
 	if (texture_red_as_alpha)
 	{
-		color = vec4(texture_color.rgb * color.rgb, color.r);
+		color = vec4(texture_color.rgb * color.rgb * modulate_color.rgb, color.r);
 	}
 	else
 	{
-		color *= texture_color;
+		color = color * texture_color * modulate_color;
 	}
 
 	bool apply_contrast = contrast != 1. || brightness != 0.;
@@ -746,7 +749,7 @@ void fragment() {
 	#endif
 	
 	color.a *= texture_alpha;
-
+	
 	// if the following line throws an error thats a godot bug, ignore it.
 	// Shader works as intented
 	COLOR = color;
